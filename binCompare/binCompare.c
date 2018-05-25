@@ -1,13 +1,23 @@
 /**
  * @file binCompare.h
  * @author Francesco Sacco
- * @date 22 May 2018
+ * @date 25 May 2018
  * @brief This project compare two binaries files.
  *
  * This software is a tool to compare two binaries files. It'll
  * show if there are any difference.
  * @see http://github.com/francescosacco/BinaryTools
  */
+ 
+ /**********
+  *
+  * Version log. 
+  *
+  * 2018-05-25 - 0.0.1 - Fix data type to print at console.
+  * 2018-05-22 - 0.0.0 - Initial version.
+  *
+  **********/
+ 
 #include <stdio.h>
 
 int main( int argc , char * argv[] )
@@ -18,7 +28,7 @@ int main( int argc , char * argv[] )
     int chr1 , chr2 , ret ;
     
     // Initial messages.
-    printf( "Bin Compare - Version 0 - 2018-05-22\n" ) ;
+    printf( "Bin Compare - Version 0.0.1\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -81,12 +91,12 @@ int main( int argc , char * argv[] )
     {
         if( fileSize1 > fileSize2 )
         {
-            printf( "\tFile \"%s\" is %u bigger than \"%s\"\n" , argv[ 1 ] , ( unsigned long ) ( fileSize1 - fileSize2 ) , argv[ 2 ] ) ;
+            printf( "\tFile \"%s\" is %lu bigger than \"%s\"\n" , argv[ 1 ] , ( unsigned long ) ( fileSize1 - fileSize2 ) , argv[ 2 ] ) ;
             smallestSize = fileSize2 ;
         }
         else
         {
-            printf( "\tFile \"%s\" is %u bigger than \"%s\"\n" , argv[ 2 ] , ( unsigned long ) ( fileSize2 - fileSize1 ) , argv[ 1 ] ) ;
+            printf( "\tFile \"%s\" is %lu bigger than \"%s\"\n" , argv[ 2 ] , ( unsigned long ) ( fileSize2 - fileSize1 ) , argv[ 1 ] ) ;
             smallestSize = fileSize1 ;
         }
     }
@@ -101,7 +111,7 @@ int main( int argc , char * argv[] )
         if( chr1 == EOF )
         {
             ret = ferror( file1 ) ;
-            printf( "\tError to read file \"%s\"at %u!\n" , argv[ 1 ] , i ) ;
+            printf( "\tError to read file \"%s\"at %lu!\n" , argv[ 1 ] , ( unsigned long ) i ) ;
             printf( "\tferror [ %d ]\n" , ret ) ;
             fclose( file1 ) ;
             fclose( file2 ) ;
@@ -112,7 +122,7 @@ int main( int argc , char * argv[] )
         if( chr2 == EOF )
         {
             ret = ferror( file2 ) ;
-            printf( "\tError to read file \"%s\"at %u!\n" , argv[ 2 ] , i ) ;
+            printf( "\tError to read file \"%s\"at %lu!\n" , argv[ 2 ] , ( unsigned long ) i ) ;
             printf( "\tferror [ %d ]\n" , ret ) ;
             fclose( file1 ) ;
             fclose( file2 ) ;
@@ -127,7 +137,7 @@ int main( int argc , char * argv[] )
     
     if( differences )
     {
-        printf( "\tFound differences at %u bytes.\n" , differences ) ;
+        printf( "\tFound differences at %lu bytes.\n" , ( unsigned long ) differences ) ;
     }
     else
     {

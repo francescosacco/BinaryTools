@@ -1,7 +1,7 @@
 /**
  * @file bin2hex.h
  * @author Francesco Sacco
- * @date 18 May 2018
+ * @date 25 May 2018
  * @brief This project converts binary files to HEX files.
  *
  * This software is a tool to convert binary files to HEX string
@@ -9,6 +9,15 @@
  * @see http://github.com/francescosacco/BinaryTools
  */
 
+ /**********
+  *
+  * Version log. 
+  *
+  * 2018-05-25 - 0.0.1 - Fix data type to print at console.
+  * 2018-05-18 - 0.0.0 - Initial version.
+  *
+  **********/
+ 
 #include <stdio.h>
 
 int main( int argc , char * argv[] )
@@ -19,7 +28,7 @@ int main( int argc , char * argv[] )
     int chr , ret ;
     
     // Initial messages.
-    printf( "Bin To Hex - Version 0 - 2018-05-18\n" ) ;
+    printf( "Bin To Hex - Version 0.0.1\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -60,7 +69,7 @@ int main( int argc , char * argv[] )
         fclose( fileOut ) ;
         return( ret ) ;
     }
-    printf( "\t\"%s\" - Size = %ul\n" , argv[ 1 ] , ( unsigned long ) fileInSize ) ;
+    printf( "\t\"%s\" - Size = %lu\n" , argv[ 1 ] , ( unsigned long ) fileInSize ) ;
     
     for( i = 0 , fileOutSize = 0 ; i < fileInSize ; i++ )
     {
@@ -68,7 +77,7 @@ int main( int argc , char * argv[] )
         if( chr == EOF )
         {
             ret = ferror( fileIn ) ;
-            printf( "\tError to read binary file at %u!\n" , i ) ;
+            printf( "\tError to read binary file at %lu!\n" , ( unsigned long ) i ) ;
             printf( "\tferror [ %d ]\n" , ret ) ;
             fclose( fileIn ) ;
             fclose( fileOut ) ;
@@ -89,7 +98,7 @@ int main( int argc , char * argv[] )
         fileOutSize += ( fpos_t ) ret ;
     }
     
-    printf( "\t\"%s\" - Size = %u\n" , argv[ 2 ] , ( unsigned long ) fileOutSize ) ;
+    printf( "\t\"%s\" - Size = %lu\n" , argv[ 2 ] , ( unsigned long ) fileOutSize ) ;
     printf( "\tDone!\n" ) ;
     
     return( 0 ) ;
