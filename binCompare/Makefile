@@ -23,7 +23,6 @@
 
 CC=gcc
 CFLAGS=-c -Wall
-INCLUDES=-I../src/
 
 all: binCompare
 
@@ -31,7 +30,7 @@ binCompare: binCompare.o
 	$(CC) binCompare.o -Wall -o binCompare.exe
 
 %.o : %.c    
-	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
     
 clean:
 	rm -f binCompare.o binCompare.exe

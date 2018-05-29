@@ -23,7 +23,6 @@
 
 CC=gcc
 CFLAGS=-c -Wall
-INCLUDES=-I../src/
 
 all: bin2hex
 
@@ -31,7 +30,7 @@ bin2hex: bin2hex.o
 	$(CC) bin2hex.o -Wall -o bin2hex.exe
 
 %.o : %.c    
-	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
     
 clean:
 	rm -f bin2hex.o bin2hex.exe

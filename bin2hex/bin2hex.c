@@ -1,7 +1,7 @@
 /**
  * @file bin2hex.h
  * @author Francesco Sacco
- * @date 25 May 2018
+ * @date 29 May 2018
  * @brief This project converts binary files to HEX files.
  *
  * This software is a tool to convert binary files to HEX string
@@ -13,30 +13,42 @@
   *
   * Version log. 
   *
+  * 2018-05-29 - 0.1.0 - Add columns control.
   * 2018-05-25 - 0.0.1 - Fix data type to print at console.
   * 2018-05-18 - 0.0.0 - Initial version.
   *
   **********/
  
 #include <stdio.h>
+#include <string.h> // To use strstr().
+#include <stdlib.h> // To use atoi().
 
 int main( int argc , char * argv[] )
 {
     FILE * fileIn  ;
     FILE * fileOut ;
     fpos_t  fileInSize , fileOutSize , i ;
-    int chr , ret ;
+    int chr , ret , colCount , colSize = 0 ;
     
     // Initial messages.
-    printf( "Bin To Hex - Version 0.0.1\n" ) ;
+    printf( "Bin To Hex - Version 0.1.0\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
     if( argc < 3 )
     {
-        printf( "Usage: bin2hex <Binary File In> <Hex File Out>\n" ) ;
+        printf( "Usage: bin2hex <Binary File In> <Hex File Out> [-c50]\n" ) ;
         printf( "\n" ) ;
         return( 0 ) ;
+    }
+    else if( argc > 3 )
+    {
+        char * str = strstr( argv[ 3 ] , "-c" ) ;
+        if( str == argv[ 3 ] )
+        {
+            colSize = atoi( &argv[ 3 ][ 2 ] ) ;
+            printf( "\tConfigured %d columns.\n" , colSize ) ;
+        }
     }
     
     // Open Binary File.
@@ -46,7 +58,7 @@ int main( int argc , char * argv[] )
         printf( "\tError to open \"%s\"\n" , argv[ 1 ] ) ;
         return( -1 ) ;
     }
-    
+
     // Create Hex File.
     fileOut = fopen( argv[ 2 ] , "wb" ) ;
     if( fileIn == ( ( FILE * ) NULL ) )
@@ -71,7 +83,7 @@ int main( int argc , char * argv[] )
     }
     printf( "\t\"%s\" - Size = %lu\n" , argv[ 1 ] , ( unsigned long ) fileInSize ) ;
     
-    for( i = 0 , fileOutSize = 0 ; i < fileInSize ; i++ )
+    for( i = 0 , fileOutSize = 0 , colCount = 0 ; i < fileInSize ; i++ )
     {
         chr = getc( fileIn ) ;
         if( chr == EOF )
@@ -93,6 +105,13 @@ int main( int argc , char * argv[] )
             fclose( fileIn ) ;
             fclose( fileOut ) ;
             return( ret ) ;
+        }
+        
+        colCount += 2 ;
+        if( ( colSize ) && ( colCount >= colSize ) )
+        {
+          ( void ) fprintf( fileOut , "\n" ) ;
+          colCount = 0 ;
         }
         
         fileOutSize += ( fpos_t ) ret ;
