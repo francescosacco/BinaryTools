@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2018-12-06 - 0.2.1 - Fix argv access.
   * 2018-12-06 - 0.2.0 - Add possibility to print at stdout.
   * 2018-05-29 - 0.1.0 - Add columns control.
   * 2018-05-25 - 0.0.1 - Fix data type to print at console.
@@ -118,7 +119,7 @@ int main( int argc , char * argv[] )
         fclose( fileOut ) ;
         return( ret ) ;
     }
-    printf( "\t\"%s\" - Size = %lu\n" , argv[ 1 ] , ( unsigned long ) fileInSize ) ;
+    printf( "\t\"%s\" - Size = %lu\n" , fileInName , ( unsigned long ) fileInSize ) ;
     
     for( i = 0 , fileOutSize = 0 , colCount = 0 ; i < fileInSize ; i++ )
     {
