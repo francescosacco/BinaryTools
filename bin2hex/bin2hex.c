@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2018-12-06 - 0.2.0 - Add possibility to print at stdout.
   * 2018-05-29 - 0.1.0 - Add columns control.
   * 2018-05-25 - 0.0.1 - Fix data type to print at console.
   * 2018-05-18 - 0.0.0 - Initial version.
@@ -25,46 +26,82 @@
 
 int main( int argc , char * argv[] )
 {
-    FILE * fileIn  ;
-    FILE * fileOut ;
+    FILE * fileIn  = NULL ;
+    FILE * fileOut = NULL ;
+    char * fileInName = NULL ;
+    char * fileOutName = NULL ;
     fpos_t  fileInSize , fileOutSize , i ;
     int chr , ret , colCount , colSize = 0 ;
     
     // Initial messages.
-    printf( "Bin To Hex - Version 0.1.0\n" ) ;
+    printf( "Bin To Hex - Version 0.2.0\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
-    if( argc < 3 )
+    if( argc < 2 )
     {
-        printf( "Usage: bin2hex <Binary File In> <Hex File Out> [-c50]\n" ) ;
+        printf( "Usage: bin2hex <Binary File In> [Hex File Out] [-c50]\n" ) ;
         printf( "\n" ) ;
         return( 0 ) ;
     }
-    else if( argc > 3 )
+    else if( argc == 2 )
+    {
+        fileInName = argv[ 1 ] ;
+    }
+    else if( argc == 3 )
+    {
+        char * str = strstr( argv[ 2 ] , "-c" ) ;
+	if( str )
+	{
+            colSize = atoi( &argv[ 2 ][ 2 ] ) ;
+	}
+	else
+	{
+            fileOutName = argv[ 2 ] ;
+	}
+
+	fileInName = argv[ 1 ] ;
+    }
+    else
     {
         char * str = strstr( argv[ 3 ] , "-c" ) ;
-        if( str == argv[ 3 ] )
-        {
+
+        fileInName  = argv[ 1 ] ;
+	fileOutName = argv[ 2 ] ;
+	if( str )
+	{
             colSize = atoi( &argv[ 3 ][ 2 ] ) ;
-            printf( "\tConfigured %d columns.\n" , colSize ) ;
-        }
+	}
+	
+    }
+
+    if( colSize > 0 )
+    {
+        printf( "\tConfigured %d columns.\n" , colSize ) ;
     }
     
     // Open Binary File.
-    fileIn = fopen( argv[ 1 ] , "rb" ) ;
+    fileIn = fopen( fileInName , "rb" ) ;
     if( fileIn == ( ( FILE * ) NULL ) )
     {
-        printf( "\tError to open \"%s\"\n" , argv[ 1 ] ) ;
+        printf( "\tError to open \"%s\"\n" , fileInName ) ;
         return( -1 ) ;
     }
 
     // Create Hex File.
-    fileOut = fopen( argv[ 2 ] , "wb" ) ;
-    if( fileIn == ( ( FILE * ) NULL ) )
+    if( fileOutName )
     {
-        printf( "\tError to create \"%s\"\n" , argv[ 2 ] ) ;
-        return( -1 ) ;
+        fileOut = fopen( fileOutName , "wb" ) ;
+        if( fileIn == ( ( FILE * ) NULL ) )
+        {
+            fclose( fileIn ) ;
+            printf( "\tError to create \"%s\"\n" , fileOutName ) ;
+            return( -1 ) ;
+        }
+    }
+    else
+    {
+        fileOut = stdout ;
     }
     
     // Check binary file size.
@@ -96,7 +133,7 @@ int main( int argc , char * argv[] )
             return( ret ) ;
         }    
         
-        ret = fprintf( fileOut , "%02X" , ( unsigned char ) ( chr ) ) ;
+	ret = fprintf( fileOut , "%02X" , ( unsigned char ) ( chr ) ) ;
         if( ret < 0 )
         {
             ret = ferror( fileOut ) ;
@@ -117,8 +154,11 @@ int main( int argc , char * argv[] )
         fileOutSize += ( fpos_t ) ret ;
     }
     
-    printf( "\t\"%s\" - Size = %lu\n" , argv[ 2 ] , ( unsigned long ) fileOutSize ) ;
-    printf( "\tDone!\n" ) ;
+    if( fileOutName )
+    {
+        printf( "\t\"%s\" - Size = %lu\n" , fileOutName , ( unsigned long ) fileOutSize ) ;
+	printf( "\tDone!\n" ) ;
+    }
     
     return( 0 ) ;
 }
