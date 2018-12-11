@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2018-12-11 - 0.2.2 - Fix file error.
   * 2018-12-06 - 0.2.1 - Fix argv access.
   * 2018-12-06 - 0.2.0 - Add possibility to print at stdout.
   * 2018-05-29 - 0.1.0 - Add columns control.
@@ -35,7 +36,7 @@ int main( int argc , char * argv[] )
     int chr , ret , colCount , colSize = 0 ;
     
     // Initial messages.
-    printf( "Bin To Hex - Version 0.2.0\n" ) ;
+    printf( "Bin To Hex - Version 0.2.2\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -93,7 +94,7 @@ int main( int argc , char * argv[] )
     if( fileOutName )
     {
         fileOut = fopen( fileOutName , "wb" ) ;
-        if( fileIn == ( ( FILE * ) NULL ) )
+        if( fileOut == ( ( FILE * ) NULL ) )
         {
             fclose( fileIn ) ;
             printf( "\tError to create \"%s\"\n" , fileOutName ) ;
