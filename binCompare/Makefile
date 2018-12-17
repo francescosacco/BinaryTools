@@ -24,13 +24,19 @@
 CC=gcc
 CFLAGS=-c -Wall
 
+ifeq ($(OS),Windows_NT)
+	EXEC_FILE=binCompare.exe
+else
+	EXEC_FILE=binCompare
+endif
+
 all: binCompare
 
 binCompare: binCompare.o
-	$(CC) binCompare.o -Wall -o binCompare.exe
+	$(CC) binCompare.o -Wall -o $(EXEC_FILE)
 
 %.o : %.c    
 	$(CC) $(CFLAGS) $< -o $@
     
 clean:
-	rm -f binCompare.o binCompare.exe
+	rm -f binCompare.o $(EXEC_FILE)

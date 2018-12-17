@@ -24,13 +24,19 @@
 CC=gcc
 CFLAGS=-c -Wall
 
+ifeq ($(OS),Windows_NT)
+	EXEC_FILE=binHistogram.exe
+else
+	EXEC_FILE=binHistogram
+endif
+
 all: binHistogram
 
 binHistogram: binHistogram.o
-	$(CC) binHistogram.o -Wall -o binHistogram.exe
+	$(CC) binHistogram.o -Wall -o $(EXEC_FILE)
 
 %.o : %.c    
 	$(CC) $(CFLAGS) $< -o $@
     
 clean:
-	rm -f binHistogram.o binHistogram.exe
+	rm -f binHistogram.o $(EXEC_FILE)

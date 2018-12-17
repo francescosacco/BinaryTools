@@ -24,13 +24,19 @@
 CC=gcc
 CFLAGS=-c -Wall
 
+ifeq ($(OS),Windows_NT)
+	EXEC_FILE=bin2base64.exe
+else
+	EXEC_FILE=bin2base64
+endif
+
 all: bin2base64
 
 bin2base64: bin2base64.o
-	$(CC) bin2base64.o -Wall -o bin2base64.exe
+	$(CC) bin2base64.o -Wall -o $(EXEC_FILE)
 
 %.o : %.c    
 	$(CC) $(CFLAGS) $< -o $@
     
 clean:
-	rm -f bin2base64.o bin2base64.exe
+	rm -f bin2base64.o $(EXEC_FILE)

@@ -24,13 +24,19 @@
 CC=gcc
 CFLAGS=-c -Wall
 
+ifeq ($(OS),Windows_NT)
+	EXEC_FILE=bin2hex.exe
+else
+	EXEC_FILE=bin2hex
+endif
+
 all: bin2hex
 
 bin2hex: bin2hex.o
-	$(CC) bin2hex.o -Wall -o bin2hex.exe
+	$(CC) bin2hex.o -Wall -o $(EXEC_FILE)
 
 %.o : %.c    
 	$(CC) $(CFLAGS) $< -o $@
     
 clean:
-	rm -f bin2hex.o bin2hex.exe
+	rm -f bin2hex.o $(EXEC_FILE)
