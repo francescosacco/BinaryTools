@@ -145,7 +145,7 @@ int main( int argc , char * argv[] )
           colCount = 0 ;
         }
         
-        fileOutSize += ( fpos_t ) ret ;
+        fileOutSize += ( uint32_t ) ret ;
     }
     
     if( fileOutName )
