@@ -23,6 +23,7 @@
 
 CC=gcc
 CFLAGS=-c -Wall
+INC=-I../library/
 
 ifeq ($(OS),Windows_NT)
 	EXEC_FILE=bin2base32.exe
@@ -32,11 +33,14 @@ endif
 
 all: bin2base32
 
-bin2base32: bin2base32.o
-	$(CC) bin2base32.o -Wall -o $(EXEC_FILE)
+bin2base32: base32.o main.o
+	$(CC) base32.o main.o -Wall -o $(EXEC_FILE)
 
-%.o : %.c    
-	$(CC) $(CFLAGS) $< -o $@
-    
+base32.o:    
+	$(CC) $(CFLAGS) $(INC) ../library/base32.c -o base32.o
+
+main.o: main.c    
+	$(CC) $(CFLAGS) $(INC) main.c -o main.o
+
 clean:
-	rm -f bin2base32.o $(EXEC_FILE)
+	rm -f base32.o main.o $(EXEC_FILE)
