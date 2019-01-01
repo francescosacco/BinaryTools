@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2018-12-26 - 0.2.3 - Fix fpos_t access for linux compilation.
   * 2018-12-11 - 0.2.2 - Fix file error.
   * 2018-12-06 - 0.2.1 - Fix argv access.
   * 2018-12-06 - 0.2.0 - Add possibility to print at stdout.
@@ -25,6 +26,9 @@
 #include <stdio.h>
 #include <string.h> // To use strstr().
 #include <stdlib.h> // To use atoi().
+#include <stdint.h>
+
+uint32_t getFileSize( FILE * in ) ;
 
 int main( int argc , char * argv[] )
 {
@@ -32,7 +36,7 @@ int main( int argc , char * argv[] )
     FILE * fileOut = NULL ;
     char * fileInName = NULL ;
     char * fileOutName = NULL ;
-    fpos_t  fileInSize , fileOutSize , i ;
+    uint32_t fileInSize , fileOutSize , i ;
     int chr , ret , colCount , colSize = 0 ;
     
     // Initial messages.
@@ -107,19 +111,7 @@ int main( int argc , char * argv[] )
     }
     
     // Check binary file size.
-    fileInSize = 0 ;
-    ret = fseek( fileIn , 0 , SEEK_END ) ;
-    ret = ( ret == 0 ) ? fgetpos( fileIn , &fileInSize ) : ( ret ) ;
-    ret = ( ret == 0 ) ? fseek( fileIn , 0 , SEEK_SET ) : ( ret ) ;
-    if( ret != 0 )
-    {
-        ret = ferror( fileIn ) ;
-        printf( "\tError to get binary file size!\n" ) ;
-        printf( "\tferror [ %d ]\n" , ret ) ;
-        fclose( fileIn ) ;
-        fclose( fileOut ) ;
-        return( ret ) ;
-    }
+    fileInSize = getFileSize( fileIn ) ;
     printf( "\t\"%s\" - Size = %lu\n" , fileInName , ( unsigned long ) fileInSize ) ;
     
     for( i = 0 , fileOutSize = 0 , colCount = 0 ; i < fileInSize ; i++ )
@@ -153,7 +145,7 @@ int main( int argc , char * argv[] )
           colCount = 0 ;
         }
         
-        fileOutSize += ( fpos_t ) ret ;
+        fileOutSize += ( uint32_t ) ret ;
     }
     
     if( fileOutName )
@@ -163,4 +155,34 @@ int main( int argc , char * argv[] )
     }
     
     return( 0 ) ;
+}
+
+uint32_t getFileSize( FILE * in )
+{
+    uint32_t ret = 0 ;
+    fpos_t pos ;
+    int fPosRet ;
+    
+    fPosRet = fgetpos( in , &pos ) ;
+    if( fPosRet )
+    {
+        return( ret ) ;
+    }
+    
+    fPosRet = fseek( in , 0 , SEEK_END ) ;
+    if( fPosRet )
+    {
+        return( ret ) ;
+    }
+    
+    ret = ( uint32_t ) ftell( in ) ;
+    if( ret == 0xFFFFFFFF )
+    {
+        ret = 0 ;
+        return( ret ) ;
+    }
+
+    ( void ) fsetpos( in , &pos ) ;
+    
+    return( ret ) ;
 }
