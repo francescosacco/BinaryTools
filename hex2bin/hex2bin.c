@@ -176,17 +176,35 @@ uint8_t isValidHex( uint8_t * hexIn )
 
 uint8_t hex2bin( uint8_t * hexIn )
 {
-    uint8_t chrHigh , chrLow , ret ;
-
-    chrHigh = hexIn[ 0 ] & 0xDF ;
-    chrLow  = hexIn[ 1 ] & 0xDF ;
+    uint8_t ret = 0x00 ;
     
-    chrHigh = ( chrHigh & 0x40 ) ? ( chrHigh - 'A' + 0x0A ) : ( chrHigh - '0' ) ;
-    chrLow  = ( chrLow  & 0x40 ) ? ( chrLow  - 'A' + 0x0A ) : ( chrLow  - '0' ) ;
+    if( ( hexIn[ 0 ] >= '0' ) && ( hexIn[ 0 ] <= '9' ) )
+    {
+        ret = hexIn[ 0 ] - '0' ;
+    }
+    else if( ( hexIn[ 0 ] >= 'A' ) && ( hexIn[ 0 ] <= 'F' ) )
+    {
+        ret = hexIn[ 0 ] - 'A' + 0x0A ;
+    }
+    else if( ( hexIn[ 0 ] >= 'a' ) && ( hexIn[ 0 ] <= 'f' ) )
+    {
+        ret = hexIn[ 0 ] - 'a' + 0x0A ;
+    }
     
-    ret   = chrHigh ;
     ret <<= 4 ;
-    ret  |= chrLow ;
-    
+
+    if( ( hexIn[ 1 ] >= '0' ) && ( hexIn[ 1 ] <= '9' ) )
+    {
+        ret |= hexIn[ 1 ] - '0' ;
+    }
+    else if( ( hexIn[ 1 ] >= 'A' ) && ( hexIn[ 1 ] <= 'F' ) )
+    {
+        ret |= hexIn[ 1 ] - 'A' + 0x0A ;
+    }
+    else if( ( hexIn[ 1 ] >= 'a' ) && ( hexIn[ 1 ] <= 'f' ) )
+    {
+        ret |= hexIn[ 1 ] - 'a' + 0x0A ;
+    }
+
     return( ret ) ;
 }
