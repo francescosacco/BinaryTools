@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2019-02-09 - 0.0.1 - Fix upper case.
   * 2019-02-08 - 0.0.0 - Initial version.
   *
   **********/
@@ -43,7 +44,7 @@ int main( int argc , char * argv[] )
     int chr , ret , hexDataIdx ;
     
     // Initial messages.
-    printf( "Hex To Bin - Version 0.0.0\n" ) ;
+    printf( "Hex To Bin - Version 0.0.1\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -177,8 +178,8 @@ uint8_t hex2bin( uint8_t * hexIn )
 {
     uint8_t chrHigh , chrLow , ret ;
 
-    chrHigh = hexIn[ 0 ] ;
-    chrLow  = hexIn[ 1 ] ;
+    chrHigh = hexIn[ 0 ] & 0xDF ;
+    chrLow  = hexIn[ 1 ] & 0xDF ;
     
     chrHigh = ( chrHigh & 0x40 ) ? ( chrHigh - 'A' + 0x0A ) : ( chrHigh - '0' ) ;
     chrLow  = ( chrLow  & 0x40 ) ? ( chrLow  - 'A' + 0x0A ) : ( chrLow  - '0' ) ;
