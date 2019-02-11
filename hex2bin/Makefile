@@ -23,6 +23,7 @@
 
 CC=gcc
 CFLAGS=-c -Wall
+INC=-I../library/
 
 ifeq ($(OS),Windows_NT)
 	EXEC_FILE=hex2bin.exe
@@ -32,11 +33,14 @@ endif
 
 all: hex2bin
 
-hex2bin: hex2bin.o
-	$(CC) hex2bin.o -Wall -o $(EXEC_FILE)
+hex2bin: hex2bin.o main.o
+	$(CC) hex2bin.o main.o -Wall -o $(EXEC_FILE)
 
-%.o : %.c    
-	$(CC) $(CFLAGS) $< -o $@
-    
+hex2bin.o:    
+	$(CC) $(CFLAGS) $(INC) ../library/hex2bin.c -o hex2bin.o
+
+main.o: main.c    
+	$(CC) $(CFLAGS) $(INC) main.c -o main.o
+
 clean:
-	rm -f hex2bin.o $(EXEC_FILE)
+	rm -f hex2bin.o main.o $(EXEC_FILE)

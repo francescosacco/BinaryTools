@@ -1,5 +1,5 @@
 /**
- * @file bin2base32.c
+ * @file base32.h
  * @author Francesco Sacco
  * @date 12 Dec 2018
  * @brief This project converts binary data to Base-32.
