@@ -23,6 +23,7 @@
 
 CC=gcc
 CFLAGS=-c -Wall
+INC=-I../library/
 
 ifeq ($(OS),Windows_NT)
 	EXEC_FILE=bin2base64.exe
@@ -32,11 +33,14 @@ endif
 
 all: bin2base64
 
-bin2base64: bin2base64.o
-	$(CC) bin2base64.o -Wall -o $(EXEC_FILE)
+bin2base64: base64.o main.o
+	$(CC) base64.o main.o -Wall -o $(EXEC_FILE)
 
-%.o : %.c    
-	$(CC) $(CFLAGS) $< -o $@
-    
+base64.o:    
+	$(CC) $(CFLAGS) $(INC) ../library/base64.c -o base64.o
+
+main.o: main.c    
+	$(CC) $(CFLAGS) $(INC) main.c -o main.o
+
 clean:
-	rm -f bin2base64.o $(EXEC_FILE)
+	rm -f base64.o main.o $(EXEC_FILE)
