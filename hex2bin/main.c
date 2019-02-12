@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2019-02-12 - 0.1.1 - Change exhibition of file name.
   * 2019-02-11 - 0.1.0 - Created library with hex2bin code.
   * 2019-02-09 - 0.0.1 - Fix upper case.
   * 2019-02-08 - 0.0.0 - Initial version.
@@ -20,7 +21,7 @@
   **********/
  
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 #include <stdint.h>
 
 #include "../library/hex2bin.h"
@@ -36,13 +37,19 @@ int main( int argc , char * argv[] )
     FILE * fileOut = NULL ;
     char * fileInName = NULL ;
     char * fileOutName = NULL ;
+
+    int fileInNameSize ;
+    int fileOutNameSize ;
+    int fileNameSize ;
+    char fileName[ 64 ] ;
+
     uint32_t fileInSize , fileOutSize , i ;
     uint8_t hexData[ 2 ] ;
     uint8_t validRet , binData ;
     int chr , ret , hexDataIdx ;
     
     // Initial messages.
-    printf( "Hex To Bin - Version 0.1.0\n" ) ;
+    printf( "Hex To Bin - Version 0.1.1\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -55,6 +62,9 @@ int main( int argc , char * argv[] )
 
     fileInName  = argv[ 1 ] ;
     fileOutName = argv[ 2 ] ;
+    
+    fileInNameSize  = ( int ) strlen( ( const char * ) fileInName  ) ;
+    fileOutNameSize = ( int ) strlen( ( const char * ) fileOutName ) ;
 
     // Open Hex File.
     fileIn = fopen( fileInName , "rb" ) ;
@@ -75,7 +85,6 @@ int main( int argc , char * argv[] )
     
     // Check hex file size.
     fileInSize = getFileSize( fileIn ) ;
-    printf( "\t\"%s\" - Size = %lu\n" , fileInName , ( unsigned long ) fileInSize ) ;
     
     for( i = 0 , fileOutSize = 0 , hexDataIdx = 0 ; i < fileInSize ; i++ )
     {
@@ -114,8 +123,30 @@ int main( int argc , char * argv[] )
             fileOutSize++ ;
         }
     }
+
+    fileNameSize = ( fileInNameSize > fileOutNameSize ) ? ( fileInNameSize ) : ( fileOutNameSize ) ;
+    if( fileNameSize > 63 )
+    {
+        fileNameSize = 63 ;
+    }
+
+    ( void ) strncpy( fileName , ( const char * ) fileInName , fileNameSize ) ;
+    if( fileNameSize > fileInNameSize )
+    {
+        ( void ) memset( fileName + fileInNameSize , ' ' , fileNameSize - fileInNameSize ) ;
+    }
+    fileName[ fileNameSize ] = '\0' ;
+
+    printf( "\t%s - Size = %lu Bytes\n" , fileName , ( unsigned long ) fileInSize ) ;
+
+    ( void ) strncpy( fileName , ( const char * ) fileOutName , fileNameSize ) ;
+    if( fileNameSize > fileOutNameSize )
+    {
+        ( void ) memset( fileName + fileOutNameSize , ' ' , fileNameSize - fileOutNameSize ) ;
+    }
+    fileName[ fileNameSize ] = '\0' ;
     
-    printf( "\t\"%s\" - Size = %lu\n" , fileOutName , ( unsigned long ) fileOutSize ) ;
+    printf( "\t%s - Size = %lu Bytes\n" , fileName , ( unsigned long ) fileOutSize ) ;
 	printf( "\tDone!\n" ) ;
     
     return( 0 ) ;
