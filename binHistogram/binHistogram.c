@@ -12,6 +12,7 @@
   *
   * Version log. 
   *
+  * 2019-02-13 - 0.0.1 - Add documentation.
   * 2018-05-18 - 0.0.0 - Initial version.
   *
   **********/
@@ -26,11 +27,32 @@ int main( int argc , char * argv[] )
     unsigned long int i ;
     int chr , ret ;
 
+    /**********
+     *
+     * Histogram data: The index of the data represents the byte. The content of the
+     *                 memory is the number of times this bytes appears in the file.
+     *
+     *        +-----+
+     *   FFh  |     | -> Number of times of byte FFh.
+     *        +-----+
+     *   FEh  |     | -> Number of times of byte FEh.
+     *        +-----+
+     *        |     |
+     *
+     *        |     |
+     *        +-----+
+     *        |     | -> Number of times of byte 01h.
+     *   01h  +-----+
+     *   00h  |     | -> Number of times of byte 00h.
+     *        +-----+
+     *
+     **********/
+    
     unsigned long int histogram[ 256 ] ;
     float percentage ;
     
     // Initial messages.
-    printf( "Bin Histogram - Version 0.0.0\n" ) ;
+    printf( "Bin Histogram - Version 0.0.1\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -64,10 +86,13 @@ int main( int argc , char * argv[] )
     }
     printf( "\t\"%s\" - Size = %lu\n" , argv[ 1 ] , ( unsigned long ) fileInSize ) ;
     
+    // Initialize histogram with 0.
     memset( histogram , 0 , sizeof( histogram ) ) ;
 
+    // Runs calculation byte by byte.
     for( i = 0 ; i < fileInSize ; i++ )
     {
+        // Read data from file.
         chr = getc( file ) ;
         if( chr == EOF )
         {
@@ -78,28 +103,34 @@ int main( int argc , char * argv[] )
             return( ret ) ;
         }    
         
-        histogram[ chr & 0xFF ]++ ;
+        // Increments the position that represents the character.
+        histogram[ chr & 0x00FF ]++ ;
     }
-    
 
+    // Prints the results.
     printf( "\n" ) ;
     printf( "Byte     - count      - percentage\n" ) ;
     for( i = 0 ; i < 256 ; i++ )
     {
+        // Calculate percentage of the data.
         percentage  = ( float ) histogram[ i ] ;
-	percentage *= 100.0 ;
-	percentage /= ( float ) fileInSize ;
+        percentage *= 100.0 ;
+        percentage /= ( float ) fileInSize ;
 
+        // Is the character printable?
         if( ( i >= 0x20 ) && ( i <= 0x7E ) )
-	{
+        {
+            // Yes, so print it.
             printf( " %02Xh '%c' - " , ( unsigned char ) i , ( char ) i ) ;
-	}
-	else
-	{
-	    printf( " %02Xh     - " , ( unsigned char ) i ) ;
-	}
-	printf( "%10lu - " , histogram[ i ] ) ;
-	printf( "%f\n" , percentage ) ;
+        }
+        else
+        {
+            // No, so keeps space.
+            printf( " %02Xh     - " , ( unsigned char ) i ) ;
+        }
+
+        printf( "%10lu - " , histogram[ i ] ) ;
+        printf( "%f\n" , percentage ) ;
     }
 
     fclose( file ) ;
