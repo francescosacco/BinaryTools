@@ -12,6 +12,7 @@
   *
   * Version log. 
   *
+  * 2019-02-25 - 0.1.1 - Add more documentation.
   * 2019-02-12 - 0.1.0 - Created library with Base-64 code.
   * 2018-12-10 - 0.0.0 - Initial version.
   *

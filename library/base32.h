@@ -12,6 +12,7 @@
   *
   * Version log. 
   *
+  * 2019-02-25 - 0.1.1 - Add more documentation and fix conversion.
   * 2018-12-30 - 0.1.0 - Created library with Base-32 code.
   * 2018-12-12 - 0.0.0 - Initial version.
   *
