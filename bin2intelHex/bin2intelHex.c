@@ -12,6 +12,7 @@
   *
   * Version log. 
   *
+  * 2019-02-26 - 0.0.1 - Add enum to type.
   * 2019-02-25 - 0.0.0 - Initial version.
   *
   **********/
@@ -19,8 +20,18 @@
 #include <stdio.h>
 #include <stdint.h>
 
+typedef enum
+{
+    iHex_data            = 0x00 ,
+    iHex_endOfFile       = 0x01 ,
+    iHex_ExtendedSegAddr = 0x02 ,
+    iHex_StartSegAddr    = 0x03 ,
+    iHex_ExtLinearAddr   = 0x04 ,
+    iHex_StartLinearAddr = 0x05
+} iHexType_t ;
+
 uint32_t getFileSize( FILE * in ) ;
-uint32_t intelHexLine( uint8_t size , uint16_t addr , uint8_t type , uint8_t * data , char * outPut ) ;
+uint32_t intelHexLine( uint8_t size , uint16_t addr , iHexType_t type , uint8_t * data , char * outPut ) ;
 
 int main( int argc , char * argv[] )
 {
@@ -97,7 +108,7 @@ int main( int argc , char * argv[] )
         
         if( bufferIndex >= 16 )
         {
-            ( void ) intelHexLine( bufferIndex , addrCount , 0x00 , buffer , bufferOut ) ;
+            ( void ) intelHexLine( bufferIndex , addrCount , iHex_data , buffer , bufferOut ) ;
             fileOutSize += ( uint32_t ) fprintf( fileOut , "%s\n" , bufferOut ) ;
             addrCount += bufferIndex ;
             bufferIndex = 0 ;
@@ -106,11 +117,11 @@ int main( int argc , char * argv[] )
 
     if( bufferIndex )
     {
-        ( void ) intelHexLine( bufferIndex , addrCount , 0x00 , buffer , bufferOut ) ;
+        ( void ) intelHexLine( bufferIndex , addrCount , iHex_data , buffer , bufferOut ) ;
         fileOutSize += ( uint32_t ) fprintf( fileOut , "%s\n" , bufferOut ) ;
     }
 
-    ( void ) intelHexLine( 0x00 , 0x0000 , 0x01 , NULL , bufferOut ) ;
+    ( void ) intelHexLine( 0x00 , 0x0000 , iHex_endOfFile , NULL , bufferOut ) ;
     fileOutSize += ( uint32_t ) fprintf( fileOut , "%s\n" , bufferOut ) ;
     
     printf( "\t\"%s\" - Size = %lu\n" , fileOutName , ( unsigned long ) fileOutSize ) ;
@@ -149,7 +160,7 @@ uint32_t getFileSize( FILE * in )
     return( ret ) ;
 }
 
-uint32_t intelHexLine( uint8_t size , uint16_t addr , uint8_t type , uint8_t * data , char * outPut )
+uint32_t intelHexLine( uint8_t size , uint16_t addr , iHexType_t type , uint8_t * data , char * outPut )
 {
     int outIndex = 0 ;
     uint8_t cks ;
@@ -164,8 +175,8 @@ uint32_t intelHexLine( uint8_t size , uint16_t addr , uint8_t type , uint8_t * d
     cks += ( uint8_t ) ( addr      ) ;
     
     // Record type.
-    outIndex += sprintf( outPut + outIndex , "%02X" , type ) ;
-    cks += type ;
+    outIndex += sprintf( outPut + outIndex , "%02X" , ( uint8_t ) type ) ;
+    cks += ( uint8_t ) type ;
             
     // Data.
     for( int i = 0 ; ( i < size ) && ( data != NULL ) ; i++ )
