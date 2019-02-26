@@ -13,7 +13,7 @@
   *
   * Version log. 
   *
-  * 2019-02-26 - 0.0.2 - Add getFileSize function.
+  * 2019-02-26 - 0.0.2 - Add getFileSize function and difference size.
   * 2018-05-25 - 0.0.1 - Fix data type to print at console.
   * 2018-05-22 - 0.0.0 - Initial version.
   *
@@ -64,7 +64,7 @@ int main( int argc , char * argv[] )
     fileSize1 = getFileSize( file1 ) ;
     fileSize2 = getFileSize( file2 ) ;
 
-    // Check if file size os equal.
+    // Check if file size is equal.
     if( fileSize1 != fileSize2 )
     {
         if( fileSize1 > fileSize2 )
@@ -116,6 +116,10 @@ int main( int argc , char * argv[] )
     if( differences )
     {
         printf( "\tFound differences at %lu bytes.\n" , ( unsigned long ) differences ) ;
+    }
+    else if( fileSize1 != fileSize2 )
+    {
+        printf( "\tThe size is different, but ther's no data difference.\n" ) ;
     }
     else
     {
