@@ -13,12 +13,16 @@
   *
   * Version log. 
   *
+  * 2019-02-26 - 0.0.2 - Add getFileSize function.
   * 2018-05-25 - 0.0.1 - Fix data type to print at console.
   * 2018-05-22 - 0.0.0 - Initial version.
   *
   **********/
  
 #include <stdio.h>
+#include <stdint.h>
+
+uint32_t getFileSize( FILE * in ) ;
 
 int main( int argc , char * argv[] )
 {
@@ -56,35 +60,9 @@ int main( int argc , char * argv[] )
         return( -1 ) ;
     }
     
-    // Check binary file 1 size.
-    fileSize1 = 0 ;
-    ret = fseek( file1 , 0 , SEEK_END ) ;
-    ret = ( ret == 0 ) ? fgetpos( file1 , &fileSize1 ) : ( ret ) ;
-    ret = ( ret == 0 ) ? fseek( file1 , 0 , SEEK_SET ) : ( ret ) ;
-    if( ret != 0 )
-    {
-        ret = ferror( file1 ) ;
-        printf( "\tError to get binary file \"%s\" size!\n" , argv[ 1 ] ) ;
-        printf( "\tferror [ %d ]\n" , ret ) ;
-        fclose( file1 ) ;
-        fclose( file2 ) ;
-        return( ret ) ;
-    }
-    
-    // Check binary file 2 size.
-    fileSize2 = 0 ;
-    ret = fseek( file2 , 0 , SEEK_END ) ;
-    ret = ( ret == 0 ) ? fgetpos( file2 , &fileSize2 ) : ( ret ) ;
-    ret = ( ret == 0 ) ? fseek( file2 , 0 , SEEK_SET ) : ( ret ) ;
-    if( ret != 0 )
-    {
-        ret = ferror( file2 ) ;
-        printf( "\tError to get binary file \"%s\" size!\n" , argv[ 2 ] ) ;
-        printf( "\tferror [ %d ]\n" , ret ) ;
-        fclose( file1 ) ;
-        fclose( file2 ) ;
-        return( ret ) ;
-    }
+    // Check binary files size.
+    fileSize1 = getFileSize( file1 ) ;
+    fileSize2 = getFileSize( file2 ) ;
 
     // Check if file size os equal.
     if( fileSize1 != fileSize2 )
@@ -150,4 +128,34 @@ int main( int argc , char * argv[] )
     fclose( file2 ) ;
     
     return( 0 ) ;
+}
+
+uint32_t getFileSize( FILE * in )
+{
+    uint32_t ret = 0 ;
+    fpos_t pos ;
+    int fPosRet ;
+    
+    fPosRet = fgetpos( in , &pos ) ;
+    if( fPosRet )
+    {
+        return( ret ) ;
+    }
+    
+    fPosRet = fseek( in , 0 , SEEK_END ) ;
+    if( fPosRet )
+    {
+        return( ret ) ;
+    }
+    
+    ret = ( uint32_t ) ftell( in ) ;
+    if( ret == 0xFFFFFFFF )
+    {
+        ret = 0 ;
+        return( ret ) ;
+    }
+
+    ( void ) fsetpos( in , &pos ) ;
+    
+    return( ret ) ;
 }
