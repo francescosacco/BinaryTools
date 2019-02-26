@@ -12,7 +12,7 @@
   *
   * Version log. 
   *
-  * 2019-02-26 - 0.0.1 - Add enum to type.
+  * 2019-02-26 - 0.0.1 - Add enum to type and remove size limite.
   * 2019-02-25 - 0.0.0 - Initial version.
   *
   **********/
@@ -45,7 +45,7 @@ int main( int argc , char * argv[] )
     uint8_t buffer[ 16 ] ;
     char bufferOut[ 64 ] ;
     uint8_t bufferIndex ;
-    uint16_t addrCount ;
+    uint32_t addrCount ;
     
     // Initial messages.
     printf( "Bin To Intel Hex - Version 0.0.0\n" ) ;
@@ -74,14 +74,6 @@ int main( int argc , char * argv[] )
     fileInSize = getFileSize( fileIn ) ;
     printf( "\t\"%s\" - Size = %lu\n" , fileInName , ( unsigned long ) fileInSize ) ;
     
-    // Check file size limit.
-    if( fileInSize > ( 64 * 1024 ) )
-    {
-        printf( "\tIt's not possible to work with a file bigger than 64KBytes!\n" ) ;
-        ( void ) fclose( fileIn ) ;
-        return( -1 ) ;
-    }
-
     // Create Intel Hex File.
     fileOut = fopen( fileOutName , "wb" ) ;
     if( fileOut == ( ( FILE * ) NULL ) )
@@ -108,10 +100,19 @@ int main( int argc , char * argv[] )
         
         if( bufferIndex >= 16 )
         {
-            ( void ) intelHexLine( bufferIndex , addrCount , iHex_data , buffer , bufferOut ) ;
+            ( void ) intelHexLine( bufferIndex , ( uint16_t ) addrCount , iHex_data , buffer , bufferOut ) ;
             fileOutSize += ( uint32_t ) fprintf( fileOut , "%s\n" , bufferOut ) ;
             addrCount += bufferIndex ;
             bufferIndex = 0 ;
+            
+            // Already turn 64KBytes.
+            if( ( addrCount & 0x0000FFFF ) == 0x00000000 )
+            {
+                buffer[ 0 ] = ( uint8_t ) ( addrCount >> 24 ) ;
+                buffer[ 1 ] = ( uint8_t ) ( addrCount >> 16 ) ;
+                ( void ) intelHexLine( 2 , 0x0000 , iHex_ExtendedSegAddr , buffer , bufferOut ) ;
+                fileOutSize += ( uint32_t ) fprintf( fileOut , "%s\n" , bufferOut ) ;
+            }
         }
     }
 
