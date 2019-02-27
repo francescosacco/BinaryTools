@@ -12,6 +12,7 @@
   *
   * Version log. 
   *
+  * 2019-02-27 - 0.0.2 - Fix file manipulation.
   * 2019-02-26 - 0.0.1 - Add enum to type and remove size limite.
   * 2019-02-25 - 0.0.0 - Initial version.
   *
@@ -48,7 +49,7 @@ int main( int argc , char * argv[] )
     uint32_t addrCount ;
     
     // Initial messages.
-    printf( "Bin To Intel Hex - Version 0.0.0\n" ) ;
+    printf( "Bin To Intel Hex - Version 0.0.2\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -127,6 +128,9 @@ int main( int argc , char * argv[] )
     
     printf( "\t\"%s\" - Size = %lu\n" , fileOutName , ( unsigned long ) fileOutSize ) ;
 	printf( "\tDone!\n" ) ;
+
+    fclose( fileIn ) ;
+    fclose( fileOut ) ;
     
     return( 0 ) ;
 }
