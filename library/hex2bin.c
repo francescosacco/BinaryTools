@@ -46,34 +46,84 @@ uint8_t isValidHex( uint8_t * hexIn )
 uint8_t hex2bin( uint8_t * hexIn )
 {
     uint8_t ret = 0x00 ;
+    uint8_t chr ;
     
-    if( ( hexIn[ 0 ] >= '0' ) && ( hexIn[ 0 ] <= '9' ) )
+    chr = hexIn[ 0 ] ;
+
+    if( ( chr >= 0x30 ) && ( chr <= 0x39 ) ) // From 0 ... 9
     {
-        ret = hexIn[ 0 ] - '0' ;
+        ret = chr - '0' ;
     }
-    else if( ( hexIn[ 0 ] >= 'A' ) && ( hexIn[ 0 ] <= 'F' ) )
+    else if( ( chr >= 0x41 ) && ( chr <= 0x46 ) ) // From A ... F
     {
-        ret = hexIn[ 0 ] - 'A' + 0x0A ;
+        ret = chr - 'A' + 0x0A ;
     }
-    else if( ( hexIn[ 0 ] >= 'a' ) && ( hexIn[ 0 ] <= 'f' ) )
+    if( ( chr >= 0x61 ) && ( chr <= 0x66 ) ) // From a ... f
     {
-        ret = hexIn[ 0 ] - 'a' + 0x0A ;
+        ret = chr - 'a' + 0x0A ;
     }
     
     ret <<= 4 ;
+    chr = hexIn[ 1 ] ;
 
-    if( ( hexIn[ 1 ] >= '0' ) && ( hexIn[ 1 ] <= '9' ) )
+    if( ( chr >= 0x30 ) && ( chr <= 0x39 ) ) // From 0 ... 9
     {
-        ret |= hexIn[ 1 ] - '0' ;
+        ret |= chr - '0' ;
     }
-    else if( ( hexIn[ 1 ] >= 'A' ) && ( hexIn[ 1 ] <= 'F' ) )
+    else if( ( chr >= 0x41 ) && ( chr <= 0x46 ) ) // From A ... F
     {
-        ret |= hexIn[ 1 ] - 'A' + 0x0A ;
+        ret |= chr - 'A' + 0x0A ;
     }
-    else if( ( hexIn[ 1 ] >= 'a' ) && ( hexIn[ 1 ] <= 'f' ) )
+    if( ( chr >= 0x61 ) && ( chr <= 0x66 ) ) // From a ... f
     {
-        ret |= hexIn[ 1 ] - 'a' + 0x0A ;
+        ret |= chr - 'a' + 0x0A ;
     }
-
+    
     return( ret ) ;
 }
+
+uint8_t isHexString( uint8_t * str )
+{
+    uint32_t i ;
+    uint8_t chr ;
+
+    /**********
+     *
+     * |         |  VALID  |         |  VALID  |         |  VALID  |         |
+     * |<------->|<------->|<------->|<------->|<------->|<------->|<------->|
+     * | 00h  2Fh|30h   39h|3Ah   40h|41h   46h|47h   60h|61h   66h|67h   FFh|
+     *
+     **********/
+
+    for( i = 0 ; str[ i ] != '\0' ; i++ )
+    {
+        chr = str[ i ] ;
+
+        // Is it valid?
+        if( ( chr >= 0x30 ) && ( chr <= 0x39 ) ) // From 0 ... 9
+        {
+            // Yes.
+            continue ;
+        }
+
+        // Is it valid?
+        if( ( chr >= 0x41 ) && ( chr <= 0x46 ) ) // From A ... F
+        {
+            // Yes.
+            continue ;
+        }
+
+        // Is it valid?
+        if( ( chr >= 0x61 ) && ( chr <= 0x66 ) ) // From a ... f
+        {
+            // Yes.
+            continue ;
+        }
+
+        // If so, it's not valid.
+        return( 0 ) ;
+    }
+
+    return( 1 ) ;
+}
+

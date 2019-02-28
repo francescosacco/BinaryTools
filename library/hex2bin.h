@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2019-02-28 - 0.2.0 - Add isHexString() function.
   * 2019-02-11 - 0.1.0 - Created library with hex2bin code.
   * 2019-02-09 - 0.0.1 - Fix upper case.
   * 2019-02-08 - 0.0.0 - Initial version.
@@ -25,5 +26,6 @@
 
 uint8_t isValidHex( uint8_t * hexIn ) ;
 uint8_t hex2bin( uint8_t * hexIn ) ;
+uint8_t isHexString( uint8_t * str ) ;
 
 #endif // _HEX2BIN_H_
