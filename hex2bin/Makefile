@@ -33,14 +33,14 @@ endif
 
 all: hex2bin
 
-hex2bin: hex2bin.o main.o
-	$(CC) hex2bin.o main.o -Wall -o $(EXEC_FILE)
+hex2bin: hexString.o main.o
+	$(CC) hexString.o main.o -Wall -o $(EXEC_FILE)
 
-hex2bin.o:    
-	$(CC) $(CFLAGS) $(INC) ../library/hex2bin.c -o hex2bin.o
+hexString.o:    
+	$(CC) $(CFLAGS) $(INC) ../library/hexString.c -o hexString.o
 
 main.o: main.c    
 	$(CC) $(CFLAGS) $(INC) main.c -o main.o
 
 clean:
-	rm -f hex2bin.o main.o $(EXEC_FILE)
+	rm -f hexString.o main.o $(EXEC_FILE)

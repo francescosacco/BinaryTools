@@ -19,7 +19,7 @@
   * 2019-02-08 - 0.0.0 - Initial version.
   *
   **********/
-#include "hex2bin.h"
+#include "hexString.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -65,7 +65,7 @@ uint8_t hex2bin( char * hexIn )
     }
     
     ret <<= 4 ;
-    chr = hexIn[ 1 ] ;
+    chr = ( uint8_t ) hexIn[ 1 ] ;
 
     if( ( chr >= 0x30 ) && ( chr <= 0x39 ) ) // From 0 ... 9
     {

@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2019-03-01 - 0.1.2 - Fixed new library.
   * 2019-02-12 - 0.1.1 - Change exhibition of file name.
   * 2019-02-11 - 0.1.0 - Created library with hex2bin code.
   * 2019-02-09 - 0.0.1 - Fix upper case.
@@ -24,7 +25,7 @@
 #include <string.h>
 #include <stdint.h>
 
-#include "../library/hex2bin.h"
+#include "../library/hexString.h"
 
 #define CHR_CR                                   '\r'
 #define CHR_LF                                   '\n'
@@ -44,12 +45,12 @@ int main( int argc , char * argv[] )
     char fileName[ 64 ] ;
 
     uint32_t fileInSize , fileOutSize , i ;
-    uint8_t hexData[ 2 ] ;
+    char hexData[ 2 ] ;
     uint8_t validRet , binData ;
     int chr , ret , hexDataIdx ;
     
     // Initial messages.
-    printf( "Hex To Bin - Version 0.1.1\n" ) ;
+    printf( "Hex To Bin - Version 0.1.2\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -149,6 +150,9 @@ int main( int argc , char * argv[] )
     printf( "\t%s - Size = %lu Bytes\n" , fileName , ( unsigned long ) fileOutSize ) ;
 	printf( "\tDone!\n" ) ;
     
+    fclose( fileIn ) ;
+    fclose( fileOut ) ;
+
     return( 0 ) ;
 }
 
