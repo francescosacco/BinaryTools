@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2019-03-04 - 0.3.0 - Add function bin2hex.
   * 2019-03-01 - 0.2.0 - Organized name and functions.
   * 2019-02-11 - 0.1.0 - Created library with hex2bin code.
   * 2019-02-09 - 0.0.1 - Fix upper case.
@@ -81,4 +82,30 @@ uint8_t hex2bin( char * hexIn )
     }
     
     return( ret ) ;
+}
+
+void bin2hex( uint8_t binIn , char * hexOut )
+{
+    char chr ;
+    
+    // Is output a not valid pointer?
+    if( hexOut == NULL )
+    {
+        // Yes.
+        // So, return without do anything.
+        return ;
+    }
+    
+    // Convert Most Significant Nibble.
+    chr = ( char ) ( binIn >> 4 ) ;
+    chr += ( chr <= 9 ) ? ( '0' ) : ( 'A' ) ;
+    hexOut[ 0 ] = chr ;
+    
+    // Convert Less Significant Nibble.
+    chr = ( char ) ( binIn & 0x0F ) ;
+    chr += ( chr <= 9 ) ? ( '0' ) : ( 'A' ) ;
+    hexOut[ 1 ] = chr ;
+    
+    // Add null terminator.
+    hexOut[ 2 ] = '\0' ;
 }
