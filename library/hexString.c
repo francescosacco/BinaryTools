@@ -13,7 +13,7 @@
   *
   * Version log. 
   *
-  * 2019-03-04 - 0.3.0 - Add function bin2hex.
+  * 2019-03-04 - 0.3.0 - Add function bin2hex and isValidHexString.
   * 2019-03-01 - 0.2.0 - Organized name and functions.
   * 2019-02-11 - 0.1.0 - Created library with hex2bin code.
   * 2019-02-09 - 0.0.1 - Fix upper case.
@@ -42,6 +42,31 @@ uint8_t isValidHex( char * hexIn )
         return( 0 ) ;
     }
 
+    return( 1 ) ;
+}
+
+uint8_t isValidHexString( char * hexIn )
+{
+    size_t sizeStr , i ;
+    uint8_t ret = 0 ;
+    
+    sizeStr = strlen( hexIn ) ;
+    
+    // If there's no data or the size is odd.
+    if( ( sizeStr <= 0 ) || ( sizeStr % 2 ) )
+    {
+        return( 0 ) ;
+    }
+    
+    for( i = 0 ; i < sizeStr ; i += 2 )
+    {
+        ret = isValidHex( hexIn[ i ] ) ;
+        if( ret == 0 )
+        {
+            return( ret ) ;
+        }
+    }
+    
     return( 1 ) ;
 }
 
