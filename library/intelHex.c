@@ -1,8 +1,25 @@
+/**
+ * @file intelHex.h
+ * @author Francesco Sacco
+ * @date 28 Feb 2019
+ * @brief This library convert Intel Hex strings.
+ *
+ * This library can convert Intel hex strings to binary data.
+ * @see http://github.com/francescosacco/BinaryTools
+ */
+
+ /**********
+  *
+  * Version log. 
+  *
+  * 2019-02-28 - 0.0.0 - Initial version.
+  *
+  **********/
 #include "intelHex.h"
 
 #include <stdio.h> // To use NULL.
 #include <string.h> // To use strlen().
-#include "hex2bin.h"
+#include "hex2bin.h" // To use isValidHexString(), hex2bin() and bin2hex().
 
 #define IHEX_STARTCODE                           ':'
 #define IHEX_STRMINSIZE                          11
@@ -15,6 +32,7 @@ iHexRet_t iHexToBin( char * strIn , iHex_t * iHex_stOut )
     uint8_t hexStrRet , cks ;
     size_t strSize ;
     
+    // Check if the parameters are valid pointers.
     if( ( strIn == NULL ) || ( iHex_stOut == NULL ) )
     {
         return( iHexRet_error ) ;
@@ -24,6 +42,7 @@ iHexRet_t iHexToBin( char * strIn , iHex_t * iHex_stOut )
     strSize = strlen( strIn ) ;
     index = 0 ;
 
+    // Check if the start code is wrong, if the string is not hex, or of the size is less than minimum.
     if( ( strIn[ 0 ] != IHEX_STARTCODE ) || ( !hexStrRet ) || ( strSize < IHEX_STRMINSIZE ) )
     {
         return( iHexRet_error ) ;
@@ -32,27 +51,36 @@ iHexRet_t iHexToBin( char * strIn , iHex_t * iHex_stOut )
     iHex_stOut->startCode = strIn[ index++ ] ;
     iHex_stOut->byteCount = hex2bin( strIn[ index += 2 ] ) ;
     
+    // Check if the payload size is included in the string size.
     if( ( iHex_stOut->byteCount ) != ( strSize - IHEX_STRMINSIZE ) )
     {
         return( iHexRet_error ) ;
     }
 
+    // Convert address.
     iHex_stOut->addr   = ( uint16_t ) hex2bin( strIn[ index += 2 ] ) ;
     iHex_stOut->addr <<= 8 ;
     iHex_stOut->addr  |= ( uint16_t ) hex2bin( strIn[ index += 2 ] ) ;
 
+    // Convert type.
     iHex_stOut->recType = ( iHexType_t ) hex2bin( strIn[ index += 2 ] ) ;
     
+    // Convert payload.
     for( i = 0 ; i < iHex_stOut->byteCount ; i++ )
     {
         iHex_stOut->data[ i ] = hex2bin( strIn[ index += 2 ] ) ;
     }
 
+    // Convert check-sum.
     iHex_stOut->checkSum = hex2bin( strIn[ index += 2 ] ) ;
 
+    // Calculate check-sum from header and payload.
     cks = iHexCalcCks( iHex_stOut ) ;
+    // Is it different?
     if( iHex_stOut->checkSum != cks )
     {
+        // Yes.
+        // So, return error.
         return( iHexRet_error ) ;
     }
     
@@ -66,6 +94,7 @@ iHexRet_t binToiHex( iHex_t * iHex_stIn , char * strOut )
     uint8_t type ;
     uint8_t cks ;
     
+    // Check if the parameters are valid pointers.
     if( ( iHex_stIn == NULL ) || ( strOut == NULL ) )
     {
         return( iHexRet_error ) ;
