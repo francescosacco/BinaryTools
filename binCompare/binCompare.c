@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2019-05-24 - 0.0.3 - Add first byte different.
   * 2019-02-26 - 0.0.2 - Add getFileSize function and difference size.
   * 2018-05-25 - 0.0.1 - Fix data type to print at console.
   * 2018-05-22 - 0.0.0 - Initial version.
@@ -28,11 +29,11 @@ int main( int argc , char * argv[] )
 {
     FILE * file1  ;
     FILE * file2 ;
-    fpos_t  fileSize1 , fileSize2 , smallestSize , differences , i ;
+    fpos_t  fileSize1 , fileSize2 , smallestSize , differences , i , addrFirstDif ;
     int chr1 , chr2 , ret ;
     
     // Initial messages.
-    printf( "Bin Compare - Version 0.0.1\n" ) ;
+    printf( "Bin Compare - Version 0.0.3\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -83,7 +84,7 @@ int main( int argc , char * argv[] )
         smallestSize = fileSize1 ;
     }
     
-    for( i = 0 , differences = 0 ; i < smallestSize ; i++ )
+    for( i = 0 , differences = 0 , addrFirstDif = 0 ; i < smallestSize ; i++ )
     {
         chr1 = getc( file1 ) ;
         if( chr1 == EOF )
@@ -109,13 +110,19 @@ int main( int argc , char * argv[] )
 
         if( chr1 != chr2 )
         {
+            if( differences == 0 )
+            {
+                addrFirstDif = i ;
+            }
+            
             differences++ ;
         }
     }
     
     if( differences )
     {
-        printf( "\tFound differences at %lu bytes.\n" , ( unsigned long ) differences ) ;
+        printf( "\tFound %lu different bytes.\n" , ( unsigned long ) differences ) ;
+        printf( "\tThe first difference appears at %lu Byte.\n" , ( unsigned long ) addrFirstDif ) ;
     }
     else if( fileSize1 != fileSize2 )
     {
