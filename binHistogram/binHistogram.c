@@ -12,6 +12,7 @@
   *
   * Version log. 
   *
+  * 2019-05-25 - 0.0.2 - Improve ASCII table.
   * 2019-02-13 - 0.0.1 - Add documentation.
   * 2018-05-18 - 0.0.0 - Initial version.
   *
@@ -52,7 +53,7 @@ int main( int argc , char * argv[] )
     float percentage ;
     
     // Initial messages.
-    printf( "Bin Histogram - Version 0.0.1\n" ) ;
+    printf( "Bin Histogram - Version 0.0.2\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -84,7 +85,7 @@ int main( int argc , char * argv[] )
         fclose( file ) ;
         return( ret ) ;
     }
-    printf( "\t\"%s\" - Size = %lu\n" , argv[ 1 ] , ( unsigned long ) fileInSize ) ;
+    printf( "\t\"%s\" - Size = %lu Bytes.\n" , argv[ 1 ] , ( unsigned long ) fileInSize ) ;
     
     // Initialize histogram with 0.
     memset( histogram , 0 , sizeof( histogram ) ) ;
@@ -109,23 +110,33 @@ int main( int argc , char * argv[] )
 
     // Prints the results.
     printf( "\n" ) ;
-    printf( "Byte     - count      - percentage\n" ) ;
+    printf( "Byte     -      count - percentage\n" ) ;
     for( i = 0 ; i < 256 ; i++ )
     {
+        static const char * asciiCtrl[] = { "NUL" , "SOH" , "STX" , "ETX" , "EOT" , "ENQ" , "ACK" , "BEL" ,
+                                            "BS " , "HT " , "LF " , "VT " , "FF " , "CR " , "SO " , "SI " ,
+                                            "DLE" , "DC1" , "DC2" , "DC3" , "DC4" , "NAK" , "SYN" , "ETB" ,
+                                            "CAN" , "EM " , "SUB" , "ESC" , "FS " , "GS " , "RS " , "US " } ;
+
         // Calculate percentage of the data.
         percentage  = ( float ) histogram[ i ] ;
         percentage *= 100.0 ;
         percentage /= ( float ) fileInSize ;
 
-        // Is the character printable?
-        if( ( i >= 0x20 ) && ( i <= 0x7E ) )
+        // Print ASCII table.
+        if( i < 0x20 )
         {
-            // Yes, so print it.
+            // Print control character.
+            printf( " %02Xh %s - " , ( unsigned char ) i , asciiCtrl[ i ] ) ;
+        }
+        else if( ( i >= 0x20 ) && ( i <= 0x7E ) )
+        {
+            // Print ASCII character.
             printf( " %02Xh '%c' - " , ( unsigned char ) i , ( char ) i ) ;
         }
         else
         {
-            // No, so keeps space.
+            // Keeps space.
             printf( " %02Xh     - " , ( unsigned char ) i ) ;
         }
 
