@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2019-05-28 - 0.0.1 - Fixes segmentation fault.
   * 2019-05-27 - 0.0.0 - Initial version.
   *
   **********/
@@ -36,7 +37,7 @@ int main( int argc , char * argv[] )
     char printIt = 0 ;
     
     // Initial messages.
-    printf( "Bin Text - Version 0.0.0\n" ) ;
+    printf( "Bin Text - Version 0.0.1\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -88,7 +89,7 @@ int main( int argc , char * argv[] )
             }
         }
         
-        if( printIt )
+        if( ( printIt ) || ( bufTextSize >= 256 ) )
         {
             uint32_t j , colCount ;
             
