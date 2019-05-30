@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2019-05-29 - 0.0.2 - Simplify the code.
   * 2019-05-28 - 0.0.1 - Fixes segmentation fault.
   * 2019-05-27 - 0.0.0 - Initial version.
   *
@@ -37,7 +38,7 @@ int main( int argc , char * argv[] )
     char printIt = 0 ;
     
     // Initial messages.
-    printf( "Bin Text - Version 0.0.1\n" ) ;
+    printf( "Bin Text - Version 0.0.2\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -96,22 +97,8 @@ int main( int argc , char * argv[] )
             printf( "%04X.%04Xh - \"" , ( uint16_t ) ( bufAddr >> 16 ) , ( uint16_t ) ( bufAddr & 0x0000FFFF ) ) ;
             for( j = 0 , colCount = 0 ; j < bufTextSize ; j++ )
             {
-                if( bufText[ j ] != '\n' )
-                {
-                    printf( "%c" , bufText[ j ] ) ;
-                    colCount++ ;
-                }
-                else if( bufText[ j ] != '\r' )
-                {
-                    // Just ignore.
-                }
-                else
-                {
-                    for( ; colCount < 48 ; colCount++ )
-                    {
-                        printf( " " ) ;
-                    }
-                }
+                printf( "%c" , bufText[ j ] ) ;
+                colCount++ ;
                 
                 if( colCount >= 48 )
                 {
