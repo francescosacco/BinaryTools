@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2019-05-30 - 0.1.0 - Add strict C string check.
   * 2019-05-29 - 0.0.2 - Simplify the code.
   * 2019-05-28 - 0.0.1 - Fixes segmentation fault.
   * 2019-05-27 - 0.0.0 - Initial version.
@@ -36,17 +37,23 @@ int main( int argc , char * argv[] )
     uint16_t bufTextSize ;
     uint32_t bufAddr ;
     char printIt = 0 ;
+    char strictStr = 0 ;
     
     // Initial messages.
-    printf( "Bin Text - Version 0.0.2\n" ) ;
+    printf( "Bin Text - Version 0.1.0\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
     if( argc < 2 )
     {
-        printf( "Usage: binText <Binary File In>\n" ) ;
-        printf( "\n" ) ;
+        printf( "Usage: binText <Binary File In> [--strict]\n" ) ;
+        printf( "\t--strict - Strictly C strings (NULL ended).\n" ) ;
         return( 0 ) ;
+    }
+
+    if( ( argc > 2 ) && strstr( argv[ 2 ] , "--strict" ) )
+    {
+        strictStr = 1 ;
     }
 
     // Open Binary File.
@@ -59,9 +66,10 @@ int main( int argc , char * argv[] )
 
     // Check binary file size.
     fileInSize = getFileSize( fileIn ) ;
-    
+
     for( i = 0 , bufTextSize = 0 ; i < fileInSize ; i++ )
     {
+        // Get character.
         chr = getc( fileIn ) ;
         if( chr == EOF )
         {
@@ -70,36 +78,45 @@ int main( int argc , char * argv[] )
             printf( "\tferror [ %d ]\n" , ret ) ;
             fclose( fileIn ) ;
             return( ret ) ;
-        }    
-     
+        }
+
+        // Is this character printable?
         if( ( chr >= 0x20 ) && ( chr <= 0x7E ) )
         {
+            // Yes.
             if( bufTextSize == 0 )
             {
                 memset( bufText , '\0' , sizeof( bufText ) ) ;
                 bufAddr = i ;
             }
-            
+
             bufText[ bufTextSize++ ] = ( char ) chr ;
         }
         else
         {
+            // No.
+            if( ( strictStr ) && ( chr != '\0' ) )
+            {
+                printIt = 0 ;
+                bufTextSize = 0 ;
+            }
+
             if( bufTextSize )
             {
                 printIt = 1 ;
             }
         }
-        
+
         if( ( printIt ) || ( bufTextSize >= 256 ) )
         {
             uint32_t j , colCount ;
-            
+
             printf( "%04X.%04Xh - \"" , ( uint16_t ) ( bufAddr >> 16 ) , ( uint16_t ) ( bufAddr & 0x0000FFFF ) ) ;
             for( j = 0 , colCount = 0 ; j < bufTextSize ; j++ )
             {
                 printf( "%c" , bufText[ j ] ) ;
                 colCount++ ;
-                
+
                 if( colCount >= 48 )
                 {
                     printf( "\"\n" ) ;
@@ -114,9 +131,9 @@ int main( int argc , char * argv[] )
             printIt = 0 ;
         }
     }
-    
+
     fclose( fileIn ) ;
-    
+
     return( 0 ) ;
 }
 
