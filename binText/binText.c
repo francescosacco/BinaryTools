@@ -13,6 +13,7 @@
   *
   * Version log. 
   *
+  * 2019-05-31 - 0.2.0 - Reduce address size for small files.
   * 2019-05-30 - 0.1.0 - Add strict C string check.
   * 2019-05-29 - 0.0.2 - Simplify the code.
   * 2019-05-28 - 0.0.1 - Fixes segmentation fault.
@@ -22,7 +23,6 @@
  
 #include <stdio.h>
 #include <string.h> // To use strstr().
-#include <stdlib.h> // To use atoi().
 #include <stdint.h>
 
 uint32_t getFileSize( FILE * in ) ;
@@ -40,7 +40,7 @@ int main( int argc , char * argv[] )
     char strictStr = 0 ;
     
     // Initial messages.
-    printf( "Bin Text - Version 0.1.0\n" ) ;
+    printf( "Bin Text - Version 0.2.0\n" ) ;
     printf( "Francesco Sacco - francesco_sacco@hotmail.com\n" ) ;
     
     // Check arguments.
@@ -111,7 +111,12 @@ int main( int argc , char * argv[] )
         {
             uint32_t j , colCount ;
 
-            printf( "%04X.%04Xh - \"" , ( uint16_t ) ( bufAddr >> 16 ) , ( uint16_t ) ( bufAddr & 0x0000FFFF ) ) ;
+            if( fileInSize >= 0x10000 )
+            {
+                printf( "%04X." , ( uint16_t ) ( bufAddr >> 16 ) ) ;
+            }
+            printf( "%04Xh - \"" , ( uint16_t ) ( bufAddr & 0x0000FFFF ) ) ;
+
             for( j = 0 , colCount = 0 ; j < bufTextSize ; j++ )
             {
                 printf( "%c" , bufText[ j ] ) ;
@@ -120,7 +125,14 @@ int main( int argc , char * argv[] )
                 if( colCount >= 48 )
                 {
                     printf( "\"\n" ) ;
-                    printf( "             \"" ) ;
+                    if( fileInSize >= 0x10000 )
+                    {
+                        printf( "             \"" ) ;
+                    }
+                    else
+                    {
+                        printf( "        \"" ) ;
+                    }
                     colCount = 0 ;
                 }
             }
