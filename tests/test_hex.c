@@ -50,15 +50,39 @@ static void test_single_byte(void)
 
 static void test_multiple_bytes(void)
 {
-/*
     unsigned char input[] = { 0xDE, 0xAD, 0xBE, 0xEF };
     char output[8];
 
+    testCounters_incrementGroup( &testCounters ) ;
+
     size_t written = bin_to_hex(input, sizeof(input), output);
 
-    check(written == 8, "multiple bytes: size mismatch");
-    check(memcmp(output, "DEADBEEF", 8) == 0, "multiple bytes: wrong hex value");
-*/
+    TestResult_t result = ( written == 8 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Eight bytes written." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( memcmp(output, "DEADBEEF", 8) == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Match data." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
+static void test_empty_buffer(void)
+{
+    unsigned char input[] = {};
+    char output[1];
+
+    testCounters_incrementGroup( &testCounters ) ;
+
+    output[0] = 0x5A ;
+    size_t written = bin_to_hex(input, 0, output);
+
+    TestResult_t result = ( written == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Zero bytes written." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( output[0] == 0x5A ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Match data." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
 }
 
 // Executor.
@@ -71,9 +95,12 @@ int main(void)
 
     printf( "Test: test_single_byte\n" ) ;
     test_single_byte() ;
-    
+
     printf( "Test: test_multiple_bytes\n" ) ;
     test_multiple_bytes() ;
+    
+    printf( "Test: test_empty_buffer\n" ) ;
+    test_empty_buffer() ;
 
     print_testCounters( testCounters ) ;
 
