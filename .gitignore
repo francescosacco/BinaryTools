@@ -1,0 +1,8 @@
+# CMake build directories
+build/
+
+# Editor / IDE
+*.swp
+*.swo
+.vscode/
+.idea/
