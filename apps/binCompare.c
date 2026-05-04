@@ -32,7 +32,6 @@ int main( int argc , char * argv[] )
     FILE * file1  ;
     FILE * file2 ;
     uint32_t fileSize1 , fileSize2 , smallestSize , differences , i , addrFirstDif ;
-    int chr1 , chr2 ;
     
     // Initial messages.
     printf( "bin Compare - Version 1.0.0\n" ) ;
@@ -93,6 +92,8 @@ int main( int argc , char * argv[] )
     
     for( i = 0 , differences = 0 , addrFirstDif = 0 ; i < smallestSize ; i++ )
     {
+        int chr1 , chr2 ;
+
         chr1 = getc( file1 ) ;
         if( chr1 == EOF )
         {
