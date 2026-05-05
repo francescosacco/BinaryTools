@@ -85,6 +85,36 @@ static void test_empty_buffer(void)
     testCounters_incrementResult( &testCounters , result ) ;
 }
 
+static void test_invalid_char(void)
+{
+    const char *input = "DEADZEEF";
+    unsigned char output[4];
+    size_t out_len = 0 ;
+
+    testCounters_incrementGroup( &testCounters ) ;
+
+    hex_status_t status = hex_to_bin( input , strlen( input ) , output , &out_len ) ;
+
+    TestResult_t result = ( status == HEX_ERR_INVALID_CHAR ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Invalid character not detected." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
+static void test_odd_length(void)
+{
+    const char * input = "ABC" ;
+    unsigned char output[ 2 ] ;
+    size_t out_len = 0 ;
+
+    testCounters_incrementGroup( &testCounters ) ;
+
+    hex_status_t status = hex_to_bin( input , strlen( input ) , output , &out_len ) ;
+
+    TestResult_t result = ( status == HEX_ERR_ODD_LENGTH ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Odd length not detected." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
 // Executor.
 
 int main(void)
@@ -98,13 +128,19 @@ int main(void)
 
     printf( "Test: test_multiple_bytes\n" ) ;
     test_multiple_bytes() ;
-    
+
     printf( "Test: test_empty_buffer\n" ) ;
     test_empty_buffer() ;
 
+    printf( "Test: test_invalid_char\n" ) ;
+    test_invalid_char() ;
+
+    printf( "Test: test_odd_length\n" ) ;
+    test_odd_length() ;
+
     print_testCounters( testCounters ) ;
 
-    return 0;
+    return 0 ;
 }
 
 // Support functions: Implementation.
