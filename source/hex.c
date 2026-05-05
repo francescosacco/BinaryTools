@@ -12,6 +12,8 @@
 
 #include "hex.h"
 
+static int hex_value( char c ) ;
+
 static const char hex_table[] = "0123456789ABCDEF";
 
 size_t bin_to_hex(const uint8_t * input , size_t input_len , char * output )
@@ -28,4 +30,70 @@ size_t bin_to_hex(const uint8_t * input , size_t input_len , char * output )
     }
 
     return j ;
+}
+
+hex_status_t hex_to_bin( const char * input , size_t input_len , unsigned char * output , size_t * output_len)
+{
+    size_t out_idx = 0 ;
+    int high_nibble = -1 ;
+
+    for( size_t i = 0 ; i < input_len ; i++ )
+    {
+        char c = input[ i ] ;
+
+        // Ignore line breaks.
+        if( ( c == '\n' ) || ( c == '\r' ) )
+        {
+            continue ;
+        }
+
+        int value = hex_value( c ) ;
+        if( value < 0 )
+        {
+            return HEX_ERR_INVALID_CHAR ;
+        }
+
+        if( high_nibble < 0 )
+        {
+            high_nibble = value ;
+        }
+        else
+        {
+            output[ out_idx++ ] = ( high_nibble << 4 ) | value ;
+            high_nibble = -1 ;
+        }
+    }
+
+    // Odd number of digits.
+    if( high_nibble >= 0 )
+    {
+        return HEX_ERR_ODD_LENGTH ;
+    }
+
+    if( output_len )
+    {
+        *output_len = out_idx ;
+    }
+
+    return HEX_OK ;
+}
+
+static int hex_value( char c )
+{
+    int value = -1 ;
+    
+    if( ( c >= '0' ) && ( c <= '9') )
+    {
+        value = ( int ) ( c - '0' ) ;
+    }
+    else if( ( c >= 'A' ) && ( c <= 'F' ) )
+    {
+        value = ( int ) ( c - 'A' + 0x0A ) ;
+    }
+    else if( ( c >= 'a' ) && ( c <= 'f' ) )
+    {
+        value = ( int ) ( c - 'a' + 0x0A ) ;
+    }
+
+    return value ;
 }
