@@ -1,11 +1,12 @@
 /**
- * @file bin2hex.h
+ * @file bin2hex.c
  * @author Francesco Sacco
  * @date 29 May 2018
  * @brief This project converts binary files to HEX files.
  *
  * This software is a tool to convert binary files to HEX string
  * files.
+ *
  * @see http://github.com/francescosacco/BinaryTools
  */
 

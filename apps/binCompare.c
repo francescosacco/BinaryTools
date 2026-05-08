@@ -1,11 +1,12 @@
 /**
- * @file binCompare.h
+ * @file binCompare.c
  * @author Francesco Sacco
  * @date 25 May 2018
  * @brief This project compare two binaries files.
  *
  * This software is a tool to compare two binaries files. It'll
  * show if there are any difference.
+ *
  * @see http://github.com/francescosacco/BinaryTools
  */
  
