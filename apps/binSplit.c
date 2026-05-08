@@ -99,6 +99,7 @@ int main( int argc , char ** argv )
         fclose( fileOut ) ;
         return getSizeRet ;
     }
+    printf( "\tThe size of %s is %zu bytes.\n" , argv[ 1 ] , file_size ) ;
 
     // Validations.
     if( start >= file_size )
@@ -128,6 +129,7 @@ int main( int argc , char ** argv )
 
     // Copy data.
     long remaining = size ;
+    printf( "\tCopy %lu bytes.\n" , size ) ;
 
     while( remaining > 0 )
     {
@@ -183,10 +185,10 @@ int getFileSize( FILE * in , size_t * sizeOut )
     // Get current position.
     long ftell_ret ;
     ftell_ret = ftell( in ) ;
-    if( ftell_ret )
+    if( ftell_ret < 0 )
     {
         perror( "\tError" ) ;
-        return( ftell_ret ) ;
+        return( errno ) ;
     }
 
     // Load size to output parameter.
