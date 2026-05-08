@@ -22,10 +22,12 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <limits.h>
 
 #define BUFFER_SIZE                              4096
 
 int getFileSize( FILE * in , size_t * sizeOut ) ;
+int parse_number( const char * str , long * value ) ;
 
 int main( int argc , char ** argv )
 {
@@ -50,8 +52,17 @@ int main( int argc , char ** argv )
     }
 
     // Arguments parser.
-    start = strtol( argv[ 3 ] , NULL , 0 ) ;
-    size  = strtol( argv[ 4 ] , NULL , 0 ) ;
+    if( !parse_number( argv[ 3 ] , &start ) )
+    {
+        fprintf( stderr , "Invalid start offset: %s\n" , argv[ 3 ] ) ;
+        return 1 ;
+    }
+
+    if( !parse_number( argv[ 4 ] , &size ) )
+    {
+        fprintf( stderr , "Invalid size: %s\n" , argv[ 4 ] ) ;
+        return 1 ;
+    }
 
     if( ( start < 0 )  || ( size < 0 ) )
     {
@@ -185,4 +196,34 @@ int getFileSize( FILE * in , size_t * sizeOut )
     ret = fsetpos( in , &pos ) ;
 
     return ret ;
+}
+
+int parse_number( const char * str , long * value )
+{
+    char * endptr ;
+    errno = 0 ;
+
+    long result = strtol( str , &endptr , 0 ) ;
+
+    // No number to convert.
+    if( endptr == str )
+    {
+        return 0 ;
+    }
+
+    // Invalid character.
+    if( *endptr != '\0' )
+    {
+        return 0 ;
+    }
+
+    // Check if Overflow.
+    if( ( errno == ERANGE ) || ( result < 0 ) || ( result == LONG_MAX ) )
+    {
+        return 0 ;
+    }
+
+    *value = result ;
+
+    return 1 ;
 }
