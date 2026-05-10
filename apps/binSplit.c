@@ -15,6 +15,7 @@
   * Version log. 
   *
   * 2026-05-06 - 0.0.0 - Initial version.
+  * 
   *
   **********/
 
@@ -22,12 +23,12 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include <limits.h>
+
+#include "utils.h"
 
 #define BUFFER_SIZE                              4096
 
 int getFileSize( FILE * in , size_t * sizeOut ) ;
-int parse_number( const char * str , long * value ) ;
 
 int main( int argc , char ** argv )
 {
@@ -198,34 +199,4 @@ int getFileSize( FILE * in , size_t * sizeOut )
     ret = fsetpos( in , &pos ) ;
 
     return ret ;
-}
-
-int parse_number( const char * str , long * value )
-{
-    char * endptr ;
-    errno = 0 ;
-
-    long result = strtol( str , &endptr , 0 ) ;
-
-    // No number to convert.
-    if( endptr == str )
-    {
-        return 0 ;
-    }
-
-    // Invalid character.
-    if( *endptr != '\0' )
-    {
-        return 0 ;
-    }
-
-    // Check if Overflow.
-    if( ( errno == ERANGE ) || ( result < 0 ) || ( result == LONG_MAX ) )
-    {
-        return 0 ;
-    }
-
-    *value = result ;
-
-    return 1 ;
 }

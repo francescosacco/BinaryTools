@@ -7,3 +7,4 @@ target_link_libraries(hex2bin PRIVATE hexlib)
 add_executable(binCompare binCompare.c)
 
 add_executable(binSplit binSplit.c)
+target_link_libraries(binSplit PRIVATE utilslib)
