@@ -117,6 +117,24 @@ static void test_halfHex(void)
 
     int resultParser = parse_number( valuestr , &value ) ;
 
+    TestResult_t result = ( resultParser == 1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Conversion result." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( value == 0x123 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Hexadecimal value match." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
+static void test_decimalOverflow(void)
+{
+    long value = 0 ;
+    char * valuestr = "999999999999999999999999999" ;
+
+    testCounters_incrementGroup( &testCounters ) ;
+
+    int resultParser = parse_number( valuestr , &value ) ;
+
     TestResult_t result = ( resultParser == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
     print_testResult( result , "Conversion result." ) ;
     testCounters_incrementResult( &testCounters , result ) ;
@@ -147,6 +165,9 @@ int main(void)
 
     printf( "Test: test_halfHex\n" ) ;
     test_halfHex() ;
+    
+    printf( "Test: test_decimalOverflow\n" ) ;
+    test_decimalOverflow() ;
 
     print_testCounters( testCounters ) ;
 
