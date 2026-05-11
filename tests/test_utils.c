@@ -66,6 +66,62 @@ static void test_hexadecimal(void)
     testCounters_incrementResult( &testCounters , result ) ;
 }
 
+static void test_invalidString(void)
+{
+    long value = 0 ;
+    char * valuestr = "abc" ;
+
+    testCounters_incrementGroup( &testCounters ) ;
+
+    int resultParser = parse_number( valuestr , &value ) ;
+
+    TestResult_t result = ( resultParser == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Conversion result." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
+static void test_partialNumber(void)
+{
+    long value = 0 ;
+    char * valuestr = "123abc" ;
+
+    testCounters_incrementGroup( &testCounters ) ;
+
+    int resultParser = parse_number( valuestr , &value ) ;
+
+    TestResult_t result = ( resultParser == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Conversion result." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
+static void test_emptyString(void)
+{
+    long value = 0 ;
+    char * valuestr = "" ;
+
+    testCounters_incrementGroup( &testCounters ) ;
+
+    int resultParser = parse_number( valuestr , &value ) ;
+
+    TestResult_t result = ( resultParser == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Conversion result." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
+static void test_halfHex(void)
+{
+    long value = 0 ;
+    char * valuestr = "0x123" ;
+
+    testCounters_incrementGroup( &testCounters ) ;
+
+    int resultParser = parse_number( valuestr , &value ) ;
+
+    TestResult_t result = ( resultParser == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Conversion result." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
 // Executor.
 
 int main(void)
@@ -79,6 +135,18 @@ int main(void)
 
     printf( "Test: test_hexadecimal\n" ) ;
     test_hexadecimal() ;
+
+    printf( "Test: test_invalidString\n" ) ;
+    test_invalidString() ;
+
+    printf( "Test: test_partialNumber\n" ) ;
+    test_partialNumber() ;
+
+    printf( "Test: test_emptyString\n" ) ;
+    test_emptyString() ;
+
+    printf( "Test: test_halfHex\n" ) ;
+    test_halfHex() ;
 
     print_testCounters( testCounters ) ;
 
