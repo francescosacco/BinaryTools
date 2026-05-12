@@ -12,6 +12,8 @@
 
 #include "hex.h"
 
+#include <stdio.h>
+
 static int hex_value( char c ) ;
 
 static const char hex_table[] = "0123456789ABCDEF";
@@ -96,4 +98,50 @@ static int hex_value( char c )
     }
 
     return value ;
+}
+
+
+static unsigned char checksum( const unsigned char * data , int len )
+{
+    unsigned int sum = 0 ;
+    unsigned char ret ;
+
+    for( int i = 0 ; i < len ; i++ )
+    {
+        sum += data[ i ] ;
+    }
+
+    ret = ( unsigned char ) ( ( ~sum + 1 ) & 0xFF ) ;
+
+    return ret ;
+}
+
+size_t ihex_write_record( char * output , unsigned char len , unsigned short addr , unsigned char type , const unsigned char * data )
+{
+    unsigned char buffer[ 5 + 256 ] ;
+    int idx = 0 ;
+    int out_idx = 0 ;
+
+    buffer[ idx++ ] = len ;
+    buffer[ idx++ ] = ( addr >> 8 ) & 0xFF ;
+    buffer[ idx++ ] = addr & 0xFF ;
+    buffer[ idx++ ] = type ;
+
+    for( int i = 0 ; i < len ; i++ )
+    {
+        buffer[ idx++ ] = data[ i ] ;
+    }
+
+    unsigned char cs = checksum( buffer , idx ) ;
+
+    out_idx += sprintf( output + out_idx , ":" ) ;
+
+    for( int i = 0 ; i < idx ; i++ )
+    {
+        out_idx += sprintf( output + out_idx , "%02X" , buffer[ i ] ) ;
+    }
+
+    out_idx += sprintf( output + out_idx , "%02X\n" , cs ) ;
+
+    return out_idx ;
 }

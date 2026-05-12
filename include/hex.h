@@ -15,6 +15,7 @@
   * Version log. 
   *
   * 2026-04-29 - 0.0.0 - Initial version.
+  * 2026-05-11 - 0.1.0 - Add Intel Hex converter.
   *
   **********/
 
@@ -51,5 +52,20 @@ size_t bin_to_hex( const uint8_t * input , size_t input_len , char * output ) ;
  * @param output_len  Output buffer length.
  */
 hex_status_t hex_to_bin( const char * input , size_t input_len , unsigned char * output , size_t * output_len) ;
+
+typedef enum
+{
+    IHEX_OK = 0 ,
+    IHEX_ERR_INVALID_ARG ,
+} ihex_status_t ;
+
+typedef enum
+{
+    IHEX_MODE_LINEAR,
+    IHEX_MODE_SEGMENT
+} ihex_mode_t;
+
+size_t ihex_write_record( char * output , unsigned char len , unsigned short addr , unsigned char type , const unsigned char * data ) ;
+ihex_status_t bin_to_ihex_buffer( const unsigned char * data , size_t data_len , unsigned int base_addr , ihex_mode_t mode , char * line_buf , size_t line_buf_size ) ;
 
 #endif // HEX_H

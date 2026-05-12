@@ -15,7 +15,6 @@
   * Version log. 
   *
   * 2026-05-06 - 0.0.0 - Initial version.
-  * 
   *
   **********/
 
