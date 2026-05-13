@@ -25,14 +25,14 @@
 #include <stdint.h>
 #include <stddef.h>
 
-
-// Error status,
+// Error status.
 typedef enum
 {
-    HEX_OK = 0,
-    HEX_ERR_INVALID_CHAR,
-    HEX_ERR_ODD_LENGTH
-} hex_status_t;
+    HEX_OK = 0 ,
+    HEX_ERR_INVALID_CHAR ,
+    HEX_ERR_ODD_LENGTH ,
+    HEX_ERR_INVALID_ARG ,
+} hex_status_t ;
 
 /**
  * @bried Convert a buffer of data from binary to hex.
@@ -53,19 +53,17 @@ size_t bin_to_hex( const uint8_t * input , size_t input_len , char * output ) ;
  */
 hex_status_t hex_to_bin( const char * input , size_t input_len , unsigned char * output , size_t * output_len) ;
 
-typedef enum
-{
-    IHEX_OK = 0 ,
-    IHEX_ERR_INVALID_ARG ,
-} ihex_status_t ;
-
-typedef enum
-{
-    IHEX_MODE_LINEAR,
-    IHEX_MODE_SEGMENT
-} ihex_mode_t;
-
+/**
+ * @brief Convert binary data into Intel Hex.
+ *
+ * @param output      Output buffer.
+ * @param len         Data length to be converted.
+ * @param addr        Address of the initial data.
+ * @param type        Intel Hex command type.
+ * @param data        Binary data buffer to be converted.
+ *
+ * @return Output buffeer size.
+ */
 size_t ihex_write_record( char * output , unsigned char len , unsigned short addr , unsigned char type , const unsigned char * data ) ;
-ihex_status_t bin_to_ihex_buffer( const unsigned char * data , size_t data_len , unsigned int base_addr , ihex_mode_t mode , char * line_buf , size_t line_buf_size ) ;
 
 #endif // HEX_H

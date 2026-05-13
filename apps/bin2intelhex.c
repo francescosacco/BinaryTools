@@ -26,6 +26,12 @@
 #include "hex.h"
 #include "utils.h"
 
+typedef enum
+{
+    IHEX_MODE_LINEAR ,
+    IHEX_MODE_SEGMENT
+} ihex_mode_t ;
+
 int getFileSize( FILE * in , size_t * sizeOut ) ;
 
 int main( int argc , char ** argv )
