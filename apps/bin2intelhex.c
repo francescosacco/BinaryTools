@@ -26,8 +26,6 @@
 #include "hex.h"
 #include "utils.h"
 
-#define DATA_SIZE 16
-
 int getFileSize( FILE * in , size_t * sizeOut ) ;
 
 int main( int argc , char ** argv )
@@ -37,11 +35,16 @@ int main( int argc , char ** argv )
 
     ihex_mode_t mode = IHEX_MODE_LINEAR ;
     unsigned int offset = 0 ;
+    uint16_t datasize = 16 ;
+
+    // Initial messages.
+    printf( "Binary to Intel Hex - Version 0.0.0\n" ) ;
+    printf( "github.com/francescosacco/BinaryTools\n" ) ;
 
     // Check the minimum arguments.
     if( argc < 3 )
     {
-        fprintf( stderr , "\tUsage: %s <input.bin> <output.hex> [--segment|--linear] [--offset <value>]\n" , argv[ 0 ] ) ;
+        fprintf( stderr , "\tUsage: %s <input.bin> <output.hex> [--segment|--linear] [--offset <value>] [--datasize <value>]\n" , argv[ 0 ] ) ;
         return 1 ;
     }
 
@@ -72,6 +75,31 @@ int main( int argc , char ** argv )
             }
 
             offset = ( unsigned int ) val ;
+            i++ ; /* consumir argumento */
+        }
+        else if( strcmp( argv[ i ] , "--datasize" ) == 0 )
+        {
+            if( ( i + 1 ) >= argc )
+            {
+                fprintf( stderr , "\tMissing value for --datasize\n" ) ;
+                return 1 ;
+            }
+
+            long val ;
+            if( !parse_number( argv[ i + 1 ] , &val ) )
+            {
+                fprintf( stderr , "\tInvalid datasize: %s\n" , argv[ i + 1 ] ) ;
+                return 1 ;
+            }
+
+            // Check datasize limit.
+            if( ( val <= 0 ) || ( val >= 256 ) )
+            {
+                fprintf( stderr , "\tError: Data size must be between 1 and 255.\n" ) ;
+                return 1 ;
+            }
+
+            datasize = ( uint16_t ) val ;
             i++ ; /* consumir argumento */
         }
         else
@@ -120,9 +148,9 @@ int main( int argc , char ** argv )
         fclose(fileOut);
         return 1;
     }
-
+    
     // Conversion.
-    unsigned char buffer[ DATA_SIZE ] ;
+    unsigned char buffer[ 256 ] ;
     char line[ 600 ] ;
 
     unsigned int address = offset ;
@@ -130,7 +158,7 @@ int main( int argc , char ** argv )
 
     for( ; /* EVER */ ; )
     {
-        size_t n = fread( buffer , sizeof( buffer[ 0 ] ) , DATA_SIZE , fileIn ) ;
+        size_t n = fread( buffer , sizeof( buffer[ 0 ] ) , datasize , fileIn ) ;
         if( n == 0 )
         {
             break ;
