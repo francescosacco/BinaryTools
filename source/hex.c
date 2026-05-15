@@ -145,3 +145,34 @@ size_t ihex_write_record( char * output , unsigned char len , unsigned short add
 
     return out_idx ;
 }
+
+int hex_byte( const char * s )
+{
+    int hi = hex_value( s[ 0 ] ) ;
+    int lo = hex_value( s[ 1 ] ) ;
+
+    if( ( hi < 0 ) || ( lo < 0 ) )
+    {
+        return -1 ;
+    }
+
+    return ( hi << 4 ) | lo ;
+}
+
+int validate_checksum( const char * line , int len )
+{
+    int sum = 0 ;
+
+    for( int i = 0 ; i < len ; i += 2 )
+    {
+        int val = hex_byte( line + i ) ;
+        if( val < 0 )
+        {
+            return 0 ;
+        }
+
+        sum += val ;
+    }
+
+    return ( sum & 0xFF ) == 0 ;
+}
