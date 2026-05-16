@@ -1,3 +1,21 @@
+/**
+ * @file intelhex2bin.c
+ * @author Francesco Sacco
+ * @date 11 May 2026
+ * @brief This project convert Intel HEX into binary.
+ *
+ * This software is a tool convert Intel Hex files into Binary files.
+ *
+ * @see http://github.com/francescosacco/BinaryTools
+ */
+
+ /**********
+  *
+  * Version log. 
+  *
+  * 2026-05-15 - 0.0.0 - Initial version.
+  *
+  **********/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,8 +27,8 @@
 
 int main( int argc , char ** argv )
 {
-    FILE * fin = NULL ;
-    FILE * fout = NULL ;
+    FILE * fileIn = NULL ;
+    FILE * fileOut = NULL ;
 
     unsigned char fill = 0x00 ;
     int strict = 0 ;
@@ -58,8 +76,8 @@ int main( int argc , char ** argv )
     }
 
     // Open input file.
-    fin = fopen( argv[ 1 ] , "r" ) ;
-    if( !fin )
+    fileIn = fopen( argv[ 1 ] , "r" ) ;
+    if( !fileIn )
     {
         fprintf( stderr , "\tError opening input: %s\n" , strerror( errno ) ) ;
         return 1 ;
@@ -85,7 +103,7 @@ int main( int argc , char ** argv )
     unsigned int max_addr = 0 ;
     int line_number = 0 ;
 
-    while( fgets( line , 1024 , fin ) )
+    while( fgets( line , 1024 , fileIn ) )
     {
         line_number++ ;
 
@@ -186,17 +204,42 @@ int main( int argc , char ** argv )
     }
 
     // Write data in the output file.
-    fout = fopen( argv[ 2 ] , "wb" ) ;
-    if( !fout )
+    fileOut = fopen( argv[ 2 ] , "wb" ) ;
+    if( !fileOut )
     {
         fprintf( stderr , "\tError opening output\n" ) ;
         goto error ;
     }
 
-    fwrite( memory , sizeof( memory[ 0 ] ) , max_addr , fout ) ;
+    fwrite( memory , sizeof( memory[ 0 ] ) , max_addr , fileOut ) ;
 
-    fclose( fin ) ;
-    fclose( fout ) ;
+    // Report.
+    uint8_t firstDataFound = 0 ;
+    uint32_t firstDataAddr = 0 ;
+    uint32_t usefulDataSize = 0 ;
+    for( unsigned int i = 0 ; i < max_addr ; i++ )
+    {
+        // Find first data.
+        if( ( firstDataFound == 0 ) && ( written[ i ] != 0 ) )
+        {
+            firstDataAddr = ( uint32_t ) i ;
+            firstDataFound = 1 ;
+        }
+
+        // Calculate useful data.
+        if( written[ i ] != 0 )
+        {
+            usefulDataSize++ ;
+        }
+    }
+    
+    // Print report.
+    printf( "\tFirst data in 0x%08X.\n" , firstDataAddr ) ;
+    printf( "\tOutput file size %u.\n" , max_addr ) ;
+    printf( "\tOutput useful size %u.\n" , usefulDataSize ) ;
+
+    fclose( fileIn ) ;
+    fclose( fileOut ) ;
     free( memory ) ;
     free( written ) ;
     free( line ) ;
@@ -204,10 +247,10 @@ int main( int argc , char ** argv )
     return 0 ;
 
 error:
-    fclose( fin ) ;
-    if( fout )
+    fclose( fileIn ) ;
+    if( fileOut )
     {
-        fclose( fout ) ;
+        fclose( fileOut ) ;
     }
     free( memory ) ;
     free( written ) ;
