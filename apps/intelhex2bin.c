@@ -25,12 +25,18 @@
 #include "utils.h"
 #include "hex.h"
 
+typedef struct
+{
+    uint8_t * data ;
+    uint8_t * isWritten ;
+} memory_t ;
+
 int main( int argc , char ** argv )
 {
     FILE * fileIn = NULL ;
     FILE * fileOut = NULL ;
 
-    unsigned char fill = 0x00 ;
+    unsigned char fill = 0xFF ;
     int strict = 0 ;
 
     // Initial messages.
@@ -85,19 +91,22 @@ int main( int argc , char ** argv )
 
     // Allocate dynamic memory for this task.
     size_t capacity = 1024 ;
-    uint8_t * memory  = malloc( capacity ) ;
-    uint8_t * written = malloc( capacity ) ;
-    char    * line    = malloc( capacity ) ;
+    memory_t memory ;
 
-    if( ( memory == NULL ) || ( written == NULL ) || ( line == NULL ) )
+    memory.data      = ( uint8_t * ) malloc( capacity ) ;
+    memory.isWritten = ( uint8_t * ) malloc( capacity ) ;
+
+    char * line = malloc( capacity ) ;
+
+    if( ( memory.data == NULL ) || ( memory.isWritten == NULL ) || ( line == NULL ) )
     {
         fprintf( stderr , "\tMemory allocation failed.\n" ) ;
         return 1 ;
     }
 
-    memset( memory  , fill , capacity ) ;
-    memset( written , 0    , capacity ) ;
-    memset( line    , '\0' , capacity ) ;
+    memset( memory.data      , fill , capacity ) ;
+    memset( memory.isWritten , 0    , capacity ) ;
+    memset( line             , '\0' , capacity ) ;
 
     unsigned int base_addr = 0 ;
     unsigned int max_addr = 0 ;
@@ -109,8 +118,15 @@ int main( int argc , char ** argv )
 
         if( line[ 0 ] != ':' )
         {
-            fprintf( stderr , "\tLine %d: invalid format\n" , line_number ) ;
-            goto error ;
+            if( strict )
+            {
+                fprintf( stderr , "\tLine %d: invalid format\n" , line_number ) ;
+                goto error ;
+            }
+            else
+            {
+                continue ;
+            }
         }
 
         int len     = hex_byte( line + 1 ) ;
@@ -133,6 +149,7 @@ int main( int argc , char ** argv )
         }
 
         unsigned int addr = ( addr_hi << 8 ) | addr_lo ;
+        // 0 = : , 1..2 = Size , 3..6 = Addr , 7..8
         const char * data = line + 9 ;
 
         if( type == 0x00 )
@@ -143,16 +160,16 @@ int main( int argc , char ** argv )
             while( ( abs_addr + len ) > capacity )
             {
                 size_t new_cap = capacity * 2 ;
-                memory = realloc( memory , new_cap ) ;
-                written = realloc( written , new_cap ) ;
+                memory.data      = realloc( memory.data      , new_cap ) ;
+                memory.isWritten = realloc( memory.isWritten , new_cap ) ;
 
-                if( ( memory == NULL ) || ( written == NULL ) )
+                if( ( memory.data == NULL ) || ( memory.isWritten == NULL ) )
                 {
                     goto error ;
                 }
 
-                memset( memory  + capacity , fill , new_cap - capacity ) ;
-                memset( written + capacity , 0    , new_cap - capacity ) ;
+                memset( memory.data      + capacity , fill , new_cap - capacity ) ;
+                memset( memory.isWritten + capacity , 0    , new_cap - capacity ) ;
 
                 capacity = new_cap ;
             }
@@ -168,14 +185,14 @@ int main( int argc , char ** argv )
 
                 unsigned int pos = ( abs_addr + i ) ;
 
-                if( written[ pos ] && ( strict ) )
+                if( memory.isWritten[ pos ] && ( strict ) )
                 {
                     fprintf( stderr , "\tLine %d: overlapping data at 0x%X\n" , line_number , pos ) ;
                     goto error ;
                 }
 
-                memory[  pos ] = ( uint8_t ) val ;
-                written[ pos ] = 1 ;
+                memory.data[  pos ] = ( uint8_t ) val ;
+                memory.isWritten[ pos ] = 1 ;
             }
 
             if( ( abs_addr + len ) > max_addr )
@@ -211,7 +228,7 @@ int main( int argc , char ** argv )
         goto error ;
     }
 
-    fwrite( memory , sizeof( memory[ 0 ] ) , max_addr , fileOut ) ;
+    fwrite( memory.data , sizeof( memory.data[ 0 ] ) , max_addr , fileOut ) ;
 
     // Report.
     uint8_t firstDataFound = 0 ;
@@ -220,14 +237,14 @@ int main( int argc , char ** argv )
     for( unsigned int i = 0 ; i < max_addr ; i++ )
     {
         // Find first data.
-        if( ( firstDataFound == 0 ) && ( written[ i ] != 0 ) )
+        if( ( firstDataFound == 0 ) && ( memory.isWritten[ i ] != 0 ) )
         {
             firstDataAddr = ( uint32_t ) i ;
             firstDataFound = 1 ;
         }
 
         // Calculate useful data.
-        if( written[ i ] != 0 )
+        if( memory.isWritten[ i ] != 0 )
         {
             usefulDataSize++ ;
         }
@@ -240,8 +257,8 @@ int main( int argc , char ** argv )
 
     fclose( fileIn ) ;
     fclose( fileOut ) ;
-    free( memory ) ;
-    free( written ) ;
+    free( memory.data ) ;
+    free( memory.isWritten ) ;
     free( line ) ;
 
     return 0 ;
@@ -252,8 +269,8 @@ error:
     {
         fclose( fileOut ) ;
     }
-    free( memory ) ;
-    free( written ) ;
+    free( memory.data ) ;
+    free( memory.isWritten ) ;
     free( line ) ;
     return 1 ;
 }
