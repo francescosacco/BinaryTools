@@ -25,6 +25,24 @@
 #include "utils.h"
 #include "hex.h"
 
+// Define macro.
+#define TO_BYTE(x)                               ( ( uint8_t  ) x )
+#define TO_WORD(x)                               ( ( uint16_t ) x )
+#define BYTE_TO_WORD(x,y)                        ( ( TO_WORD( x ) << 8 ) | TO_WORD( y ) )
+
+// Intel Hex index
+#define IHX_IDX_LEN                              1
+#define IHX_IDX_ADDR_MSB                         3
+#define IHX_IDX_ADDR_LSB                         5
+#define IHX_IDX_TYPE                             7
+#define IHX_IDX_DATA                             9
+
+// Intel Hex code
+#define IHX_CODE_DATA                            0x00
+#define IHX_CODE_EOF                             0x01
+#define IHX_EXTENDED_SEGMENT_ADDR                0x02
+#define IHX_EXTENDED_LINEAR_ADDR                 0x04
+
 typedef struct
 {
     uint8_t * data ;
@@ -129,10 +147,10 @@ int main( int argc , char ** argv )
             }
         }
 
-        int len     = hex_byte( line + 1 ) ;
-        int addr_hi = hex_byte( line + 3 ) ;
-        int addr_lo = hex_byte( line + 5 ) ;
-        int type    = hex_byte( line + 7 ) ;
+        int len     = hex_byte( line + IHX_IDX_LEN      ) ;
+        int addr_hi = hex_byte( line + IHX_IDX_ADDR_MSB ) ;
+        int addr_lo = hex_byte( line + IHX_IDX_ADDR_LSB ) ;
+        int type    = hex_byte( line + IHX_IDX_TYPE     ) ;
 
         if( ( len < 0 ) || ( addr_hi < 0 ) || ( addr_lo < 0 ) || ( type < 0 ) )
         {
@@ -142,17 +160,16 @@ int main( int argc , char ** argv )
 
         // Check the checksum.
         int total_len = 9 + ( len * 2 ) + 2;
-        if( !validate_checksum( line + 1 , total_len - 1 ) )
+        if( !validate_checksum( line + IHX_IDX_LEN , total_len - 1 ) )
         {
             fprintf( stderr , "\tLine %d: checksum error.\n" , line_number ) ;
             goto error ;
         }
 
-        unsigned int addr = ( addr_hi << 8 ) | addr_lo ;
-        // 0 = : , 1..2 = Size , 3..6 = Addr , 7..8
-        const char * data = line + 9 ;
+        unsigned int addr = BYTE_TO_WORD( addr_hi , addr_lo ) ;
+        const char * data = line + IHX_IDX_DATA ;
 
-        if( type == 0x00 )
+        if( type == IHX_CODE_DATA )
         {
             unsigned int abs_addr = base_addr + addr ;
 
@@ -191,7 +208,7 @@ int main( int argc , char ** argv )
                     goto error ;
                 }
 
-                memory.data[  pos ] = ( uint8_t ) val ;
+                memory.data[ pos ] = TO_BYTE( val ) ;
                 memory.isWritten[ pos ] = 1 ;
             }
 
@@ -200,21 +217,21 @@ int main( int argc , char ** argv )
                 max_addr = abs_addr + len ;
             }
         }
-        else if( type == 0x04 )
+        else if( type == IHX_EXTENDED_LINEAR_ADDR )
         {
             int msb = hex_byte( data     ) ;
             int lsb = hex_byte( data + 2 ) ;
 
-            base_addr = ( ( msb << 8 ) | lsb ) << 16 ;
+            base_addr = BYTE_TO_WORD( msb , lsb ) << 16 ;
         }
-        else if( type == 0x02 )
+        else if( type == IHX_EXTENDED_SEGMENT_ADDR )
         {
             int msb = hex_byte( data     ) ;
             int lsb = hex_byte( data + 2 ) ;
 
-            base_addr = ( ( msb << 8 ) | lsb ) << 4 ;
+            base_addr = BYTE_TO_WORD( msb , lsb ) << 4 ;
         }
-        else if( type == 0x01 )
+        else if( type == IHX_CODE_EOF )
         {
             break ;
         }
