@@ -96,7 +96,7 @@ static void test_invalid_char(void)
     hex_status_t status = hex_to_bin( input , strlen( input ) , output , &out_len ) ;
 
     TestResult_t result = ( status == HEX_ERR_INVALID_CHAR ) ? ( testResult_success ) : ( testResult_fail ) ;
-    print_testResult( result , "Invalid character not detected." ) ;
+    print_testResult( result , "Invalid character." ) ;
     testCounters_incrementResult( &testCounters , result ) ;
 }
 
@@ -111,7 +111,100 @@ static void test_odd_length(void)
     hex_status_t status = hex_to_bin( input , strlen( input ) , output , &out_len ) ;
 
     TestResult_t result = ( status == HEX_ERR_ODD_LENGTH ) ? ( testResult_success ) : ( testResult_fail ) ;
-    print_testResult( result , "Odd length not detected." ) ;
+    print_testResult( result , "Odd length." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
+static void test_hex_byte_basic(void)
+{
+    testCounters_incrementGroup( &testCounters ) ;
+
+    TestResult_t result ;
+
+    result = ( hex_byte( "00" ) == 0x00 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"00\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "AB" ) == 0xAB ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"AB\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "aB" ) == 0xAB ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"aB\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "ab" ) == 0xAB ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"ab\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "0A" ) == 0x0A ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"0A\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "0a" ) == 0x0a ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"0a\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "F3" ) == 0xF3 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"F3\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "f3" ) == 0xF3 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"f3\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "FF" ) == 0xFF ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"FF\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "12" ) == 0x12 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"12\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
+static void test_hex_byte_invalid(void)
+{
+    testCounters_incrementGroup( &testCounters ) ;
+
+    TestResult_t result ;
+
+    result = ( hex_byte( "G0" ) == -1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"G0\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "0G" ) == -1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"0G\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "ZZ" ) == -1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"ZZ\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "#@" ) == -1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"#@\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
+static void test_hex_byte_mixed(void)
+{
+    testCounters_incrementGroup( &testCounters ) ;
+
+    TestResult_t result ;
+
+    result = ( hex_byte( "A#" ) == -1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"A#\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "#A" ) == -1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"#A\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "0*" ) == -1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"0*\"." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( hex_byte( "&0" ) == -1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test the value \"&0\"." ) ;
     testCounters_incrementResult( &testCounters , result ) ;
 }
 
@@ -137,6 +230,15 @@ int main(void)
 
     printf( "Test: test_odd_length\n" ) ;
     test_odd_length() ;
+    
+    printf( "Test: test_hex_byte_basic\n" ) ;
+    test_hex_byte_basic() ;
+
+    printf( "Test: test_hex_byte_invalid\n" ) ;
+    test_hex_byte_invalid() ;
+    
+    printf( "Test: test_hex_byte_mixed\n" ) ;
+    test_hex_byte_mixed() ;
 
     print_testCounters( testCounters ) ;
 
