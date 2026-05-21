@@ -75,6 +75,13 @@ size_t ihex_write_record( char * output , unsigned char len , unsigned short add
  */
 int hex_byte( const char * s ) ;
 
+/**
+ * @brief Calculate and compare the checksum of a IHX line.
+ *
+ * @param line  String with just one line of Intel Hex string.
+ *
+ * @return Return 1 if the checksum us valid, 0 if it's not valid.
+ */
 int validate_checksum( const char * line , int len ) ;
 
 #endif // HEX_H

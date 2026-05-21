@@ -208,6 +208,68 @@ static void test_hex_byte_mixed(void)
     testCounters_incrementResult( &testCounters , result ) ;
 }
 
+static void test_check_sum_simple_line(void)
+{
+    testCounters_incrementGroup( &testCounters ) ;
+
+    TestResult_t result ;
+
+    const char *line1 = "0400000001020304F2" ;
+    const char *line2 = "00000001FF" ;
+    const char *line3 = "020000040000FA" ;
+
+    result = ( validate_checksum( line1 , strlen( line1 ) ) ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Validate checksum simple line." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( validate_checksum( line2 , strlen( line2 ) ) ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Validate checksum EOF." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( validate_checksum( line3 , strlen( line3 ) ) ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Validate checksum Extended Linear." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
+static void test_check_sum_simple_invalid_cks(void)
+{
+    testCounters_incrementGroup( &testCounters ) ;
+
+    TestResult_t result ;
+
+    const char * line1 = "0400000001020304F3";
+
+    result = ( validate_checksum( line1 , strlen( line1 ) ) == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test invalid checksum." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
+static void test_check_sum_simple_invalid_size(void)
+{
+    testCounters_incrementGroup( &testCounters ) ;
+
+    TestResult_t result ;
+
+    const char * line1 = "0400000001020304F" ;
+
+    result = ( validate_checksum( line1 , strlen( line1 ) ) == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test invalid size." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
+static void test_check_sum_simple_invalid_data(void)
+{
+    testCounters_incrementGroup( &testCounters ) ;
+
+    TestResult_t result ;
+
+    const char * line1 = "04000000010203ZZF2";
+
+    result = ( validate_checksum( line1 , strlen( line1 ) ) == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Test invalid data." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+}
+
 // Executor.
 
 int main(void)
@@ -239,6 +301,15 @@ int main(void)
     
     printf( "Test: test_hex_byte_mixed\n" ) ;
     test_hex_byte_mixed() ;
+    
+    printf( "Test: test_check_sum_simple_line\n" ) ;
+    test_check_sum_simple_line() ;
+    
+    printf( "Test: test_check_sum_simple_invalid_cks\n" ) ;
+    test_check_sum_simple_invalid_cks() ;
+    
+    printf( "Test: test_check_sum_simple_invalid_data\n" ) ;
+    test_check_sum_simple_invalid_data() ;
 
     print_testCounters( testCounters ) ;
 
