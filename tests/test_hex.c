@@ -32,18 +32,69 @@ void testCounters_incrementResult( TestCounters_t * testCounters , TestResult_t 
 
 static void test_single_byte(void)
 {
-    unsigned char input[] = { 0x00 };
-    char output[2];
+    unsigned char input_1[] = { 0x00 } ;
+    unsigned char input_2[] = { 0x3C } ;
+    unsigned char input_3[] = { 0x5A } ;
+    unsigned char input_4[] = { 0x7E } ;
+    unsigned char input_5[] = { 0xFF } ;
+    char output[ 2 ] ;
+    size_t written = 0 ;
+    TestResult_t result ;
 
     testCounters_incrementGroup( &testCounters ) ;
 
-    size_t written = bin_to_hex(input, 1, output);
+    // Test 1.
+    written = bin_to_hex(input_1 , 1 , output ) ;
 
-    TestResult_t result = ( written == 2 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    result = ( written == 2 ) ? ( testResult_success ) : ( testResult_fail ) ;
     print_testResult( result , "Two bytes written." ) ;
     testCounters_incrementResult( &testCounters , result ) ;
 
     result = ( memcmp(output, "00", 2) == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Match data." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    // Test 2.
+    written = bin_to_hex(input_2 , 1 , output ) ;
+
+    result = ( written == 2 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Two bytes written." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( memcmp(output, "3C", 2) == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Match data." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    // Test 3.
+    written = bin_to_hex(input_3 , 1 , output ) ;
+
+    result = ( written == 2 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Two bytes written." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( memcmp(output, "5A", 2) == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Match data." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    // Test 4.
+    written = bin_to_hex(input_4 , 1 , output ) ;
+
+    result = ( written == 2 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Two bytes written." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( memcmp(output, "7E", 2) == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Match data." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    // Test 5.
+    written = bin_to_hex(input_5 , 1 , output ) ;
+
+    result = ( written == 2 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Two bytes written." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( memcmp(output, "FF", 2) == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
     print_testResult( result , "Match data." ) ;
     testCounters_incrementResult( &testCounters , result ) ;
 }
