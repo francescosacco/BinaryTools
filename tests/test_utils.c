@@ -33,17 +33,57 @@ void testCounters_incrementResult( TestCounters_t * testCounters , TestResult_t 
 static void test_decimal(void)
 {
     long value = 0 ;
-    char * valuestr = "123" ;
+    char * valuestr_1 = "123" ;
+    char * valuestr_2 = "1234567" ;
+    char * valuestr_3 = "7654321" ;
+    char * valuestr_4 = "00000" ;
+
+    int resultParser ;
+    TestResult_t result ;
 
     testCounters_incrementGroup( &testCounters ) ;
 
-    int resultParser = parse_number( valuestr , &value ) ;
+    // Test 1.
+    resultParser = parse_number( valuestr_1 , &value ) ;
 
-    TestResult_t result = ( resultParser == 1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    result = ( resultParser == 1 ) ? ( testResult_success ) : ( testResult_fail ) ;
     print_testResult( result , "Conversion result." ) ;
     testCounters_incrementResult( &testCounters , result ) ;
 
     result = ( value == 123 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Decimal value match." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    // Test 2.
+    resultParser = parse_number( valuestr_2 , &value ) ;
+
+    result = ( resultParser == 1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Conversion result." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( value == 1234567 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Decimal value match." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    // Test 3.
+    resultParser = parse_number( valuestr_3 , &value ) ;
+
+    result = ( resultParser == 1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Conversion result." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( value == 7654321 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Decimal value match." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    // Test 4.
+    resultParser = parse_number( valuestr_4 , &value ) ;
+
+    result = ( resultParser == 1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Conversion result." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( value == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
     print_testResult( result , "Decimal value match." ) ;
     testCounters_incrementResult( &testCounters , result ) ;
 }
@@ -111,17 +151,45 @@ static void test_emptyString(void)
 static void test_halfHex(void)
 {
     long value = 0 ;
-    char * valuestr = "0x123" ;
+    char * valuestr_1 = "0x123" ;
+    char * valuestr_2 = "0x987654" ;
+    char * valuestr_3 = "0xC" ;
+    
+    int resultParser ;
+    TestResult_t result ;
 
     testCounters_incrementGroup( &testCounters ) ;
 
-    int resultParser = parse_number( valuestr , &value ) ;
+    // Test 1.
+    resultParser = parse_number( valuestr_1 , &value ) ;
 
-    TestResult_t result = ( resultParser == 1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    result = ( resultParser == 1 ) ? ( testResult_success ) : ( testResult_fail ) ;
     print_testResult( result , "Conversion result." ) ;
     testCounters_incrementResult( &testCounters , result ) ;
 
     result = ( value == 0x123 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Hexadecimal value match." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    // Test 2.
+    resultParser = parse_number( valuestr_2 , &value ) ;
+
+    result = ( resultParser == 1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Conversion result." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( value == 0x987654 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Hexadecimal value match." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    // Test 2.
+    resultParser = parse_number( valuestr_3 , &value ) ;
+
+    result = ( resultParser == 1 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Conversion result." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    result = ( value == 0xC ) ? ( testResult_success ) : ( testResult_fail ) ;
     print_testResult( result , "Hexadecimal value match." ) ;
     testCounters_incrementResult( &testCounters , result ) ;
 }
@@ -129,13 +197,25 @@ static void test_halfHex(void)
 static void test_decimalOverflow(void)
 {
     long value = 0 ;
-    char * valuestr = "999999999999999999999999999" ;
+    char * valuestr_1 = "999999999999999999999999999" ;
+    char * valuestr_2 = "-999999999999999999999999999" ;
+
+    int resultParser ;
+    TestResult_t result ;
 
     testCounters_incrementGroup( &testCounters ) ;
 
-    int resultParser = parse_number( valuestr , &value ) ;
+    // Test 1.
+    resultParser = parse_number( valuestr_1 , &value ) ;
 
-    TestResult_t result = ( resultParser == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    result = ( resultParser == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
+    print_testResult( result , "Conversion result." ) ;
+    testCounters_incrementResult( &testCounters , result ) ;
+
+    // Test 2.
+    resultParser = parse_number( valuestr_2 , &value ) ;
+
+    result = ( resultParser == 0 ) ? ( testResult_success ) : ( testResult_fail ) ;
     print_testResult( result , "Conversion result." ) ;
     testCounters_incrementResult( &testCounters , result ) ;
 }
@@ -187,7 +267,7 @@ void print_testResult( TestResult_t testResult , const char * msg )
         printf( "[ FAIL ]" ) ;
     }
     
-    printf( " - \"%s\"\n" , msg ) ;
+    printf( " - %s\n" , msg ) ;
 }
 
 void print_testCounters( TestCounters_t testCounters )
